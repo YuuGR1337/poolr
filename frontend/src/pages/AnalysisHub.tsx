@@ -175,7 +175,7 @@ const CATEGORIES: CategoryMeta[] = [
 
 export default function AnalysisHub({ project, onProjectChange }: Props) {
   const { studies, activeStudyId, addStudy, removeStudy, switchStudy } = useStudyManager();
-  const [activeCategory, setActiveCategory] = useState<CategoryKey>("bayesian");
+  const [activeCategory, setActiveCategory] = useState<CategoryKey>("overview");
   const [catalogFilter, setCatalogFilter] = useState("");
 
   const handleAddStudy = () => {

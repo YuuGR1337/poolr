@@ -61,7 +61,14 @@ v0.6.4 establishes a new updater trust key. If an old installation trusts a lost
 
 ## Screenshots
 
-Existing images in [docs/screenshots](docs/screenshots) show the earlier interface. They are retained as historical assets until fresh captures of the release candidate are verified; they should not be presented as v0.6.4 screenshots.
+The release candidate browser preview, using the BCG demo:
+
+![Review dashboard](docs/screenshots/v0.6.4/dashboard.png)
+![Analysis method finder](docs/screenshots/v0.6.4/analysisHub.png)
+
+[Light theme and collapsed navigation](docs/screenshots/v0.6.4/dashboard-light-collapsed.png) · [Learning workspace](docs/screenshots/v0.6.4/learn.png) · [Manuscript](docs/screenshots/v0.6.4/manuscript.png) · [Teams setup](docs/screenshots/v0.6.4/collaboration.png)
+
+Team screenshots show the browser's native-access notice, not a simulated Drive connection. Images outside the v0.6.4 folder are historical.
 
 ## Research quality and license
 
