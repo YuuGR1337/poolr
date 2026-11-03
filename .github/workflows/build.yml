@@ -75,6 +75,7 @@ jobs:
           APPIMAGE_EXTRACT_AND_RUN: '1'
           NO_STRIP: '1'
         with:
+          retryAttempts: 3
           projectPath: .
           tauriScript: npm run tauri
           args: --target ${{ matrix.target }}
