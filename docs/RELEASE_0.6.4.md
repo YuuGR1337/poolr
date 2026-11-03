@@ -25,3 +25,5 @@ Back up project files and identity vaults. The updater trust key was replaced be
 ## Known limits
 
 Snapshot revisions are bounded to 1 MiB signed payloads and 10,000 objects per team. There is no automatic compaction, key rotation, rich-text CRDT merge, invitation email service, or background synchronization when the app is closed. Sync intervals are jittered approximately 45–60 seconds when visible/online. A failed transfer retains the local outbox. Editors/reviewers have equal content scope; only the owner changes assignments. The UI does not grant/revoke Google folder ACLs. Drive readers can read unencrypted content, writers can delete objects, and remote availability depends on the provider. Use Drive permissions and optional rclone crypt accordingly.
+
+Linux AppImage packaging omits the optional .NET LTTng profiling provider, whose obsolete liblttng-ust.so.0 dependency is unavailable on modern distributions. Statistical execution, encryption and ordinary application logging remain enabled.

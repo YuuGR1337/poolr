@@ -63,12 +63,17 @@ jobs:
       - run: npm ci --prefix frontend
       - run: dotnet publish engine/Poolr.Engine.Api/Poolr.Engine.Api.csproj -c Release -r ${{ matrix.rid }} --self-contained true -o src-tauri/resources/engine
       - run: python scripts/bundle-rclone.py ${{ matrix.rid }} src-tauri/resources/engine
+      - name: Exclude optional LTTng profiler from portable Linux runtime
+        if: runner.os == 'Linux'
+        run: rm -f src-tauri/resources/engine/libcoreclrtraceptprovider.so
       - name: Build signed installers into draft release
         uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ''
+          APPIMAGE_EXTRACT_AND_RUN: '1'
+          NO_STRIP: '1'
         with:
           projectPath: .
           tauriScript: npm run tauri
