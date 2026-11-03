@@ -32,6 +32,7 @@ export function DriveProvider({ children }: { children: ReactNode }) {
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const queued = useRef<Project | null>(null);
   const publishing = useRef(false);
+  const publishRef = useRef<(project: Project) => Promise<void>>(async () => {});
   const bindingRef = useRef(binding);
   bindingRef.current = binding;
   const activeTeam = state.teams.find(t => t.id === activeId);
@@ -53,7 +54,7 @@ export function DriveProvider({ children }: { children: ReactNode }) {
   const sync = useCallback(async () => {
     if (!activeId || inFlight.current) return;
     inFlight.current = true; setStatus("Syncing…");
-    try { await command({ action: "sync", teamId: activeId }); await refresh(); setStatus("Up to date at " + new Date().toLocaleTimeString()); setError(""); }
+    try { const result = await command<DriveTeam>({ action: "sync", teamId: activeId }); await refresh(); setStatus(result.pending ? `${result.pending} retained revisions need attention` : "Up to date at " + new Date().toLocaleTimeString()); setError(result.pending ? "Some revisions were created under an older team policy. Review your local draft with the owner before republishing." : ""); }
     catch(e) { setError(e instanceof Error ? e.message : "Sync failed"); setStatus("Waiting for connection / attention"); }
     finally { inFlight.current = false; }
   }, [activeId, command, refresh]);
@@ -95,8 +96,16 @@ export function DriveProvider({ children }: { children: ReactNode }) {
     queued.current = project;
     if (timer.current) clearTimeout(timer.current);
     setStatus("Local draft · waiting to publish");
-    timer.current = setTimeout(() => { void shareReview(project).catch(e => { setError(String(e)); setStatus("Draft retained · needs attention"); }); }, 1500);
+    const flush = async () => {
+      if (publishing.current) { timer.current = setTimeout(() => void flush(), 750); return; }
+      const draft = queued.current;
+      if (!draft) return;
+      try { await publishRef.current(draft); if (queued.current) timer.current = setTimeout(() => void flush(), 750); }
+      catch(e) { setError(String(e)); setStatus("Draft retained · needs attention"); }
+    };
+    timer.current = setTimeout(() => void flush(), 1500);
   };
+  publishRef.current = shareReview;
   const openReview = (team: DriveTeam, revision: DriveRevision) => {
     if (queued.current) throw new Error("Publish or export your pending draft before opening another revision.");
     setActiveId(team.id); setBinding({ teamId: team.id, reviewId: revision.data.reviewId, parents: [revision.hash] });

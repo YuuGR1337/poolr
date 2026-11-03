@@ -71,7 +71,7 @@ jobs:
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ''
         with:
           projectPath: .
-          tauriScript: npm --prefix frontend exec tauri
+          tauriScript: npm run tauri
           args: --target ${{ matrix.target }}
           tagName: v0.6.4
           releaseName: Poolr v0.6.4

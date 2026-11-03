@@ -48,7 +48,7 @@ npm --prefix frontend run build
 # Linux example; select your .NET RID on other platforms.
 dotnet publish engine/Poolr.Engine.Api/Poolr.Engine.Api.csproj -c Release -r linux-x64 --self-contained true -o src-tauri/resources/engine
 python3 scripts/bundle-rclone.py linux-x64 src-tauri/resources/engine
-npm --prefix frontend exec tauri dev
+node frontend/node_modules/@tauri-apps/cli/tauri.js dev
 ```
 
 The browser can use the loopback statistical engine, but cannot access signing identities, rclone credentials or arbitrary local files. Do not expose the engine port to a network. Build-time Python downloads/verifies rclone; the application runtime is React, Rust and C#.

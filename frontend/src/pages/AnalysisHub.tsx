@@ -68,10 +68,10 @@ interface CategoryMeta {
 const CATEGORIES: CategoryMeta[] = [
   {
     key: "overview",
-    label: "Engine Catalog",
-    badge: "107+ Engines",
+    label: "Method finder",
+    badge: "Browse methods",
     Icon: Sparkles,
-    description: "Cable-managed overview and status matrix of all 107+ native analytical engines",
+    description: "Find an analysis by question, data type or method",
   },
   {
     key: "bayesian",
@@ -311,7 +311,7 @@ export default function AnalysisHub({ project, onProjectChange }: Props) {
   );
 }
 
-// ─── Cable-Managed Engine Catalog & Status Matrix ───────────────────────────
+// ─── Cable-Managed Method finder & Status Matrix ───────────────────────────
 interface CatalogItem {
   id: string;
   name: string;
@@ -445,10 +445,10 @@ function EngineCatalogView({
       <div className="flex items-center justify-between gap-3 bg-[var(--color-card)] p-4 rounded-lg border border-[var(--color-border)]">
         <div>
           <h2 className="text-sm font-semibold text-[var(--color-text)]">
-            Native Analytical Engine Registry ({ENGINE_CATALOG.length} Methods & Endpoints)
+            Analysis methods
           </h2>
           <p className="text-xs text-[var(--color-muted-foreground)]">
-            100% dedicated frontend UI coverage across all 12 hubs. All algorithms execute in-process on the local C# sidecar with zero cloud latency.
+            Choose a method after checking its data requirements and assumptions.
           </p>
         </div>
         <div className="relative w-72">
@@ -457,7 +457,7 @@ function EngineCatalogView({
             type="text"
             value={filter}
             onChange={(e) => onFilterChange(e.target.value)}
-            placeholder="Search engines, endpoints, tags…"
+            placeholder="Search methods or research questions…"
             className="w-full pl-8 pr-3 py-1.5 text-xs rounded-md border border-[var(--color-border)] bg-[var(--input-bg)] text-[var(--color-text)]"
           />
         </div>
