@@ -387,6 +387,8 @@ function Shell() {
     p.metadata.title = config.title;
     p.metadata.studyType = config.studyType;
     p.metadata.config = config;
+    p.meta.settings.measure = config.effectMeasure || "OR";
+    p.protocol.databases = config.databases.join(", ");
     p.pico = { ...p.pico, ...config.pico };
     setProject(p); setSaveState("idle"); setBanner(null);
     const seq = ++saveSeq.current;
@@ -505,7 +507,7 @@ function Shell() {
         { id: "file-demo", label: "Load demo review", description: "BCG dataset", end: "File", icon: <Sparkles className="h-4 w-4" />, onSelect: () => void loadDemo() },
         { id: "file-new", label: "New workspace", end: "File", short: "Ctrl+N", icon: <FilePlus2 className="h-4 w-4" />, onSelect: () => void handleNew() },
         { id: "file-save", label: "Save project", end: "File", short: "Ctrl+S", icon: <Save className="h-4 w-4" />, onSelect: () => void handleSave() },
-        { id: "analysis-hub", label: "Analysis Hub (34 Native Engines)…", description: "Bayesian, Diagnostics, Network, Complex Data, Quality & GRADE", end: "Analysis", icon: <Zap className="h-4 w-4" />, onSelect: () => setPage("analysisHub") },
+        { id: "analysis-hub", label: "Analysis Hub…", description: "Bayesian, Diagnostics, Network, Complex Data, Quality & GRADE", end: "Analysis", icon: <Zap className="h-4 w-4" />, onSelect: () => setPage("analysisHub") },
         { id: "analysis-specialized", label: "Specialized Analyses…", description: "Dose-response, Survival RMST, Economics, Adverse, DCA", end: "Analysis", icon: <Activity className="h-4 w-4" />, onSelect: () => setSpecializedOpen(true) },
         { id: "file-export", label: "Universal Export Center…", description: "DOCX, LaTeX, HTML, R, Stata, Python, BibTeX", end: "File", short: "Ctrl+E", icon: <FileDown className="h-4 w-4" />, onSelect: () => setExportCenterOpen(true) },
         { id: "app-theme", label: theme === "dark" ? "Switch to light theme" : "Switch to dark theme", end: "Appearance", short: "Ctrl+T", icon: theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />, onSelect: toggleTheme },
@@ -538,7 +540,7 @@ function Shell() {
         <div className="flex items-center gap-2">
           <button className="btn-ghost" onClick={() => setPaletteOpen(true)} title="Search commands (Ctrl+K)"><SearchIcon size={16}/></button>
           <details className="relative"><summary className="btn-ghost cursor-pointer">Project</summary><div className="absolute right-0 top-full z-40 mt-2 w-48 rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] p-2 shadow-lg">
-            <button className="btn-ghost w-full text-left" onClick={handleNew}>New review</button>
+            <button className="btn-ghost w-full text-left" onClick={handleNew}>New review</button><button className="btn-ghost w-full text-left" onClick={() => { try { const raw = store.get("poolr.recoveryDraft"); if (!raw) { setNotice("No recovery draft is stored."); return; } if (confirm("Open the saved local recovery draft? Export your current review first if it has unsaved changes.")) { cancelPendingSave(); setProject(normalizeProject(JSON.parse(raw))); setProjectPath(null); } } catch { setNotice("The recovery draft could not be read."); } }}>Recover local draft</button>
             <button className="btn-ghost w-full text-left" disabled={busy} onClick={handleOpen}>Open review</button>
             <button className="btn-ghost w-full text-left" disabled={busy} onClick={loadDemo}>Load demo</button>
             <button className="btn-ghost w-full text-left" onClick={() => setShowProfile(true)}>Your profile</button>

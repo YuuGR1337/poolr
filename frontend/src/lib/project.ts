@@ -317,6 +317,7 @@ export interface Project {
 }
 
 export interface ProjectConfig {
+  effectMeasure?: string;
   title: string;
   studyType: string;
   reviewType: string;

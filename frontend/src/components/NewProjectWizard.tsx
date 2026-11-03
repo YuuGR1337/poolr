@@ -3,18 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { ChevronRight, ChevronLeft, Sparkles, Users, Search, Settings, FileText } from 'lucide-react';
 import { Input, Button } from './ui';
 
-interface ProjectConfig {
-  title: string;
-  studyType: string;
-  reviewType: string;
-  reviewers: { id: string; name: string }[];
-  dualScreening: boolean;
-  aiEnabled: boolean;
-  aiFeatures: string[];
-  databases: string[];
-  pico: { population: string; intervention: string; comparator: string; outcomes: string };
-  searchStrategy: Record<string, string>;
-}
+import type { ProjectConfig } from '../lib/project';
 
 interface Props {
   onComplete?: (config: ProjectConfig) => void;
@@ -22,13 +11,13 @@ interface Props {
 }
 
 const STUDY_TYPES = [
-  { id: 'standard', name: 'Standard MA', desc: 'Binary, continuous, survival outcomes' },
+  { id: 'standard', name: 'Pairwise intervention review', desc: 'Compare two interventions using study-level effects' },
   { id: 'network', name: 'Network MA', desc: 'Multiple treatments, SUCRA rankings' },
   { id: 'ipd', name: 'IPD Meta', desc: 'Individual participant data' },
   { id: 'multilevel', name: 'Multilevel', desc: 'Dependent effect sizes' },
   { id: 'diagnostic', name: 'Diagnostic', desc: 'SROC, sensitivity/specificity' },
   { id: 'proportions', name: 'Proportions', desc: 'Single-arm pooling' },
-  { id: 'qualitative', name: 'Qualitative', desc: 'Thematic analysis' },
+  { id: 'qualitative', name: 'Qualitative synthesis', desc: 'Thematic synthesis, without numerical pooling' },
   { id: 'manual', name: 'Manual', desc: 'Full control, no guided workflow' },
 ];
 
@@ -181,6 +170,8 @@ export default function NewProjectWizard({ onComplete, onCancel }: Props) {
                       ))}
                     </div>
                   </div>
+                  {config.studyType === 'standard' && <label className="block text-xs">Outcome preset<select className="select w-full mt-2" value={config.effectMeasure || 'OR'} onChange={e => update({ effectMeasure: e.target.value })}><option value="OR">Binary events — odds ratio</option><option value="RR">Binary events — risk ratio</option><option value="RD">Binary events — risk difference</option><option value="MD">Continuous, same scale — mean difference</option><option value="SMD">Continuous, different scales — standardized mean difference</option><option value="HR">Time to event — hazard ratio</option></select></label>}
+                  <p className="text-xs text-[var(--color-text-muted)]">Choose the design and outcome before inspecting results. Presets initialize the workspace; they do not determine whether pooling is appropriate. <a href="https://www.cochrane.org/authors/handbooks-and-manuals/handbook/current/chapter-10" target="_blank" rel="noreferrer" className="underline">Cochrane methods guide</a></p>
                   <div>
                     <label className="text-[10.5px] font-semibold uppercase tracking-wide text-[var(--color-text-muted)]">Review Type</label>
                     <div className="mt-2 flex flex-wrap gap-1">

@@ -9,21 +9,25 @@ import { StepCommentsButton } from "../components/StepCommentsDrawer";
 export default function Protocol({ project, onChange }: { project: Project; onChange: (p: Project) => void }) {
   const set = (patch: Partial<Project>) => onChange({ ...project, ...patch });
   const [busy, setBusy] = useState(false);
+  const [suggestion, setSuggestion] = useState<Partial<Project["pico"]> | null>(null);
+  const [error, setError] = useState("");
 
   const handleSuggestPICO = async () => {
     const question = project.metadata.title || project.protocol.objective;
     if (!question.trim()) return;
-    setBusy(true);
+    setBusy(true); setError("");
     try {
       const pico = await suggestPICO(question);
-      set({ pico: { ...project.pico, ...pico } });
-    } finally {
+      setSuggestion(pico);
+    } catch (e) { setError(String(e)); } finally {
       setBusy(false);
     }
   };
 
   return (
     <div className="space-y-3">
+      {error && <p role="alert" className="text-sm">{error}</p>}
+      {suggestion && <Card title="Review the AI suggestion"><p className="text-xs mb-2">Verify this proposal and search for existing reviews before applying it.</p>{Object.entries(suggestion).map(([key, value]) => <p key={key} className="text-sm mb-2"><strong>{key}:</strong> {value}</p>)}<Button onClick={() => { set({ pico: { ...project.pico, ...suggestion } }); setSuggestion(null); }}>Apply reviewed suggestion</Button><Button onClick={() => setSuggestion(null)}>Discard</Button></Card>}
       <ResearchDiscovery topic={project.metadata.title || project.protocol.objective} />
       <Card title="Review title" right={<StepCommentsButton step="protocol" stepTitle="Protocol & PICO" />}>
         <Input
