@@ -4,7 +4,7 @@ Branch: `release/v0.6.4`; pull request: https://github.com/harisawan-bit/poolr/p
 
 ## Implemented
 
-- [x] Profile/team header, shared avatar/logo, collapsible sidebar and theme controls
+- [x] Profile/team header, supplied wordmark, pin-only collapsed sidebar, generated pin app icons and theme controls
 - [x] Readable analysis hub and provider favicons with text labels
 - [x] Review/outcome presets, research discovery and learning workspace
 - [x] Stable project identities and advanced-data migration preservation
@@ -12,7 +12,7 @@ Branch: `release/v0.6.4`; pull request: https://github.com/harisawan-bit/poolr/p
 - [x] Team create/join/switch/end/reopen; native signature and membership checks
 - [x] Native rclone transport, durable outbox, periodic synchronization and explicit conflict handling
 - [x] New updater trust key, private GitHub signing secret and signed artifact workflow
-- [x] README, collaboration architecture, release notes, citation and fresh screenshots
+- [x] README screen-by-screen guide, standalone wordmark asset, collaboration architecture, release notes, citation and screenshots
 
 ## Verified
 
@@ -23,12 +23,13 @@ Branch: `release/v0.6.4`; pull request: https://github.com/harisawan-bit/poolr/p
 - [x] Browser-to-engine hazard-ratio input preservation and zero-event analysis
 - [x] Removed HTTP file endpoint returns 404; unauthorized web origin returns 403
 - [x] Real Google Drive transport with two app identities using one Google account; disposable fixture moved to Drive trash
-- [x] Six-target installer matrix passed on commit 3ce55c8; rebuild required for subsequent code changes
+- [x] Six-target signed installer matrix passed on commit 70922ea; all 25 release assets, 11 updater signatures and 13 manifest entries verified
 
 ## External acceptance gates
 
 - [ ] Real two-account Google folder ACL/revocation test
-- [ ] Native install/update acceptance on every OS and architecture
+- [x] Linux x64 AppImage installed and launched on Omarchy; WebKit remained alive without EGL error and bundled engine health passed
+- [ ] Native install/update acceptance on remaining OS and architectures
 - [ ] Independent security audit and thousand-user load benchmark
 - [ ] Apple notarization / Windows platform code-signing certificates (updater signatures are configured)
 
