@@ -11,7 +11,7 @@
  */
 
 import * as React from "react";
-import { useAuth } from "./AuthContext";
+import { useDrive } from "./DriveContext";
 
 export type Role = "owner" | "editor" | "reviewer" | "viewer";
 
@@ -208,20 +208,12 @@ function writeStoredCollab(state: CollaborationState) {
 }
 
 export function CollaborationProvider({ children }: { children: React.ReactNode }) {
-  const { user } = useAuth();
+  const drive = useDrive();
+  const user = React.useMemo(() => drive.identity ? { sub: drive.identity.keyId, name: drive.identity.name, email: "", picture: undefined as string | undefined } : null, [drive.identity]);
   const [state, setState] = React.useState<CollaborationState>(() => readStoredCollab());
 
-  // Determine current user's role from team member list or default to owner
-  React.useEffect(() => {
-    if (user && user.email) {
-      const match = state.teamMembers.find((m) => m.email.toLowerCase() === user.email.toLowerCase());
-      if (match) {
-        setState((s) => ({ ...s, currentUserRole: match.role }));
-      } else if (state.teamMembers.length === 0) {
-        setState((s) => ({ ...s, currentUserRole: "owner" }));
-      }
-    }
-  }, [user, state.teamMembers]);
+  const teamRole = drive.activeTeam ? (drive.canEdit ? drive.activeTeam.members.find(m => m.keyId === drive.identity?.keyId)?.role ?? "viewer" : "viewer") : "owner";
+  React.useEffect(() => { setState(s => ({ ...s, currentUserRole: teamRole })); }, [teamRole]);
 
   // Persist state changes
   React.useEffect(() => {

@@ -74,3 +74,5 @@ Limits: 1 MiB signed payload, 10,000 objects/team, no compaction or live SQLite 
 - Rclone crypt and its scope: https://rclone.org/crypt/
 
 The installed local rclone version was 1.75.2. Current documentation includes newer behavior; validate features against the packaged version. Real Google OAuth and two-account access tests remain required.
+
+Validation update, 3 November 2026: live Google Drive transport passed using two separate Poolr identities with one configured Google account. Upload/download, shared review propagation and ended-team policy propagation succeeded; the disposable remote fixture was moved to Drive trash. This does not verify cross-account ACL behavior. The six-target installer matrix passed at commit 3ce55c8.

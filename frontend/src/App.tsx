@@ -68,7 +68,6 @@ import NewProjectWizard from "./components/NewProjectWizard";
 import ProfileModal from "./components/ProfileModal";
 import SpecializedAnalysesModal from "./components/SpecializedAnalysesModal";
 import ExportCenterModal from "./components/ExportCenterModal";
-import { AuthProvider } from "./context/AuthContext";
 import { CollaborationProvider, useCollaboration } from "./context/CollaborationContext";
 import { ConflictResolverModal } from "./components/ConflictResolverModal";
 
@@ -177,11 +176,11 @@ class PageBoundary extends Component<{ pageKey: string; children: ReactNode }, {
 export default function App() {
   return (
     <ThemeProvider>
-      <DriveProvider><AuthProvider>
+      <DriveProvider>
         <CollaborationProvider>
           <Shell />
         </CollaborationProvider>
-      </AuthProvider></DriveProvider>
+      </DriveProvider>
     </ThemeProvider>
   );
 }

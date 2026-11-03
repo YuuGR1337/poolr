@@ -1,23 +1,35 @@
-# v0.6.4 release work
+# v0.6.4 release candidate verification
 
-Branch: release/v0.6.4. Preserve the existing UI changes from main.
+Branch: `release/v0.6.4`; pull request: https://github.com/harisawan-bit/poolr/pull/73
 
-Architecture update: no hosted identity service or cPanel. Follow `docs/DRIVE_COLLABORATION.md`: pinned signing identities, owner-authorized membership, local working databases and immutable Drive change exchange. The earlier hosted-service prototype is excluded from this release.
+## Implemented
 
-- [ ] Profile/team header, shared avatar/logo, collapsible sidebar and accessible themes
-- [ ] Readable analysis hub and provider identity
-- [ ] Guided review presets, research discovery and learning workspace
-- [ ] Stable identities and lossless project migrations
-- [ ] Project-scoped manuscripts, assignments, review states and revision history
-- [ ] Team create/join/switch/end/reopen and enforceable membership permissions
-- [ ] Native rclone transport, persistent queue, continuous sync and conflict handling
-- [ ] Updater trust recovery/rotation and signed update workflow
-- [ ] Frontend build/lint/tests and security audit
-- [ ] C# build/tests/format and Rust build/tests/clippy/format
-- [ ] Browser workflow, keyboard, light/dark and narrow-window checks
-- [ ] Cross-platform installer builds and artifact verification
-- [ ] README, architecture, roadmap, release notes, citation and screenshots
+- [x] Profile/team header, shared avatar/logo, collapsible sidebar and theme controls
+- [x] Readable analysis hub and provider favicons with text labels
+- [x] Review/outcome presets, research discovery and learning workspace
+- [x] Stable project identities and advanced-data migration preservation
+- [x] Project-scoped manuscript sections, assignments, reviewers, dates, comments and checkpoints
+- [x] Team create/join/switch/end/reopen; native signature and membership checks
+- [x] Native rclone transport, durable outbox, periodic synchronization and explicit conflict handling
+- [x] New updater trust key, private GitHub signing secret and signed artifact workflow
+- [x] README, collaboration architecture, release notes, citation and fresh screenshots
 
-Do not mark remote collaboration verified without two independently authorized accounts.
-Do not claim signed updater migration from old installations without inspecting their trust key.
-Do not publish a release with failing checks or missing required installers.
+## Verified
+
+- [x] 227 engine tests, including two independent signing peers over actual rclone local transport
+- [x] 42 frontend tests, production build, lint gate and dependency audit
+- [x] C# format/security checks; Rust format and Clippy with warnings denied
+- [x] Browser routes, light/dark themes, sidebar collapse and screenshots
+- [x] Browser-to-engine hazard-ratio input preservation and zero-event analysis
+- [x] Removed HTTP file endpoint returns 404; unauthorized web origin returns 403
+- [x] Real Google Drive transport with two app identities using one Google account; disposable fixture moved to Drive trash
+- [x] Six-target installer matrix passed on commit 3ce55c8; rebuild required for subsequent code changes
+
+## External acceptance gates
+
+- [ ] Real two-account Google folder ACL/revocation test
+- [ ] Native install/update acceptance on every OS and architecture
+- [ ] Independent security audit and thousand-user load benchmark
+- [ ] Apple notarization / Windows platform code-signing certificates (updater signatures are configured)
+
+Keep the release draft until acceptance. Existing installations trusting the lost updater key must manually install a verified new release. This checklist does not claim cryptographic permission records prevent external Drive deletion or reading; Drive ACLs and optional crypt remotes remain essential.
