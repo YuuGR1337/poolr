@@ -102,7 +102,7 @@ Screenshots for the current interface are in [`docs/screenshots/v0.6.4/`](docs/s
 
 ## Linux graphics compatibility
 
-The Linux AppImage must leave Wayland, XKB and XCB display libraries to the host. Older bundles can conflict with newer Mesa/WebKit and fail with `Could not create default EGL display: EGL_BAD_PARAMETER`. The release build pins Tauri CLI 2.12.1 or newer and checks the generated AppImage for those bundled libraries. Use the AppImage built from the current release branch; do not reuse older 0.6.4 AppImages.
+The Linux AppImage must exclude the incompatible bundled `libwayland-client` library. Older bundles can conflict with newer Mesa/WebKit and fail with `Could not create default EGL display: EGL_BAD_PARAMETER`. The release build pins Tauri CLI 2.12.1 or newer and checks the generated AppImage for those bundled libraries. Use the AppImage built from the current release branch; do not reuse older 0.6.4 AppImages.
 
 ## Release validation
 

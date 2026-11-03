@@ -84,7 +84,7 @@ jobs:
           releaseBody: 'Drive collaboration and workspace redesign. See docs/RELEASE_0.6.4.md for setup, signing-key migration and verification limits.'
           releaseDraft: true
           prerelease: false
-      - name: Verify AppImage leaves display libraries to the host
+      - name: Verify AppImage excludes the incompatible Wayland client library
         if: matrix.rid == 'linux-x64'
         shell: bash
         run: python3 scripts/check-appimage.py src-tauri/target/${{ matrix.target }}/release/bundle/appimage/*.AppImage

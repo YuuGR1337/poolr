@@ -32,6 +32,6 @@ Validation update, 3 November 2026: live Google Drive transport passed using two
 
 ## Linux AppImage and branding refresh
 
-The first Linux AppImage bundled host display-stack libraries that conflict with newer Mesa/WebKit EGL initialization. Tauri CLI 2.12.1 or newer supplies the updated AppImage bundler. CI inspects the finished AppImage and fails if Wayland, XKB, XCB, Xau or Xdmcp libraries are bundled. The Linux AppImage must be launched successfully on the target Wayland/Mesa system before calling this issue resolved for that release.
+The first Linux AppImage bundled host display-stack libraries that conflict with newer Mesa/WebKit EGL initialization. Tauri CLI 2.12.1 or newer supplies the updated AppImage bundler. CI inspects the finished AppImage and fails if the incompatible bundled `libwayland-client` is present. The Linux AppImage must be launched successfully on the target Wayland/Mesa system before calling this issue resolved for that release.
 
 The supplied wordmark is used in the expanded workspace and README. The pin-only mark is used in collapsed navigation and generated Windows, macOS and Linux app icons.
