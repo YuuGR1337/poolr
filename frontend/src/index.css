@@ -33,7 +33,12 @@
 .sidebar-collapsed .workspace-sidebar nav button { justify-content: center; padding: 12px 0; }
 .workspace-sidebar { position: absolute; inset: 0 auto 0 0; width: 224px; display: flex; flex-direction: column; padding: 28px 14px 16px; background: var(--color-chrome); border-right: 1px solid var(--color-border); }
 .workspace-brand { display: flex; align-items: center; gap: 12px; padding: 0 12px 26px; }
-.workspace-brand strong { font-size: 24px; letter-spacing: -1px; }
+.workspace-brand img { display: block; object-fit: contain; }
+.workspace-brand .brand-full { width: 155px; height: 59px; }
+.workspace-brand .brand-mark { display: none; width: 24px; height: 40px; }
+.sidebar-collapsed .workspace-brand { justify-content: center; padding: 0 0 20px; }
+.sidebar-collapsed .workspace-brand .brand-full { display: none; }
+.sidebar-collapsed .workspace-brand .brand-mark { display: block; }
 .workspace-brand strong span { display: block; font-size: 10px; font-weight: 400; letter-spacing: .3px; color: var(--color-text-muted); margin-top: 2px; }
 .workspace-search { display: flex; align-items: center; gap: 7px; padding: 10px 8px; border: 1px solid var(--color-border); border-radius: 6px; font-size: 10px; color: var(--color-text-muted); cursor: pointer; }
 .workspace-search kbd { margin-left: auto; font-size: 9px; }

@@ -75,3 +75,35 @@ Team screenshots show the browser's native-access notice, not a simulated Drive 
 Presets and statistical tools require methodological judgment. Tests cover specific numerical and workflow cases; they do not certify every analysis or make a review PRISMA-compliant automatically. Review the [Cochrane Handbook](https://www.cochrane.org/authors/handbooks-and-manuals/handbook/current/chapter-10) and the reporting guideline for your design.
 
 This repository's [existing proprietary license](LICENSE) remains in force. Using open-source dependencies does not change Poolr's license or eliminate provider terms. Citation metadata is in [CITATION.cff](CITATION.cff).
+
+## Product tour
+
+Poolr keeps the review workflow in one desktop workspace. The left navigation can collapse to the pin mark; the full wordmark is used when expanded. Profile, avatar, active team, appearance, save state and connection status stay in the workspace chrome. The pin mark is used in collapsed navigation, browser tabs, app icons and installers. The full wordmark file is [`poolr-logo.png`](frontend/public/poolr-brand.png); the standalone vector pin is [`poolr-mark.svg`](frontend/public/poolr-mark.svg).
+
+![Poolr logo](frontend/public/poolr-brand.png)
+
+| Screen | What it does |
+|---|---|
+| Dashboard / Review library | Create, open, import, switch and organize review projects; see current workflow progress. |
+| Protocol | Define PICO, eligibility criteria, review type and outcomes; prepare search strategies and check PubMed, PROSPERO and Scholar for related work. |
+| Search | Select literature sources, build database-specific search strategies, import citations and deduplicate records. |
+| Screening | Independently screen titles/abstracts and full texts, record exclusion reasons, and surface reviewer disagreements. |
+| Extraction | Capture study and outcome data in review-type-aware fields while retaining advanced analysis inputs. |
+| Risk of Bias | Record domain judgments using supported assessment tools, including RoB 2, ROBINS-I and QUADAS-2. |
+| Meta-Analysis | Choose supported effect measures and analysis settings, inspect results and render forest/funnel plots. Invalid or failed engine requests are reported instead of silently replaced by a different calculation. |
+| Analysis Hub | Browse analysis methods by task and data requirements, including network, survival, diagnostic, Bayesian, dose-response, multilevel and robustness methods. Check each method's assumptions and supported inputs before use. |
+| Advanced / PRISMA | Access specialized analysis tools and track/report study flow for the review. |
+| Manuscript | Draft project-linked manuscript sections, share review assignments, track reviewers and due dates, comment and restore checkpoints. |
+| Team / Drive Sync | Create or join teams, approve memberships, sync revisions, inspect conflicts and control team lifecycle. Configure rclone separately for the shared Drive. |
+| Learn | Follow the review workflow and meta-analysis lessons, with a small practice example. |
+| Settings / Legal | Configure profile, appearance, local preferences, update checks and view legal information. |
+
+Screenshots for the current interface are in [`docs/screenshots/v0.6.4/`](docs/screenshots/v0.6.4/). The [dashboard](docs/screenshots/v0.6.4/dashboard.png), [collapsed light theme](docs/screenshots/v0.6.4/dashboard-light-collapsed.png), [Analysis Hub](docs/screenshots/v0.6.4/analysisHub.png), [protocol discovery](docs/screenshots/v0.6.4/protocol.png), [learning](docs/screenshots/v0.6.4/learn.png), [manuscript](docs/screenshots/v0.6.4/manuscript.png) and [team collaboration](docs/screenshots/v0.6.4/collaboration.png) show the primary screens.
+
+## Linux graphics compatibility
+
+The Linux AppImage must leave Wayland, XKB and XCB display libraries to the host. Older bundles can conflict with newer Mesa/WebKit and fail with `Could not create default EGL display: EGL_BAD_PARAMETER`. The release build pins Tauri CLI 2.12.1 or newer and checks the generated AppImage for those bundled libraries. Use the AppImage built from the current release branch; do not reuse older 0.6.4 AppImages.
+
+## Release validation
+
+Each release candidate runs the engine and frontend test suites, frontend production build and dependency scan, .NET formatting/security checks, Rust formatting/Clippy, and a six-target installer build. The Linux packaging check inspects the final AppImage. Full release acceptance also needs native install/update testing on each supported OS and architecture, cross-account Drive permission tests, and independent statistical/security review. See [release validation](docs/RELEASE_0.6.4.md) for exact results and known limits.

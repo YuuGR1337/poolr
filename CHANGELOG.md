@@ -129,3 +129,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 ### Removed
 ### Security
+- Linux AppImage: updated the Tauri bundler to keep Wayland/XKB/XCB display libraries host-provided, preventing EGL startup failures on newer Mesa/WebKit systems. Added a build gate that rejects AppImages bundling those libraries.
+- Branding: use the supplied poolr wordmark in the expanded workspace and documentation, the pin mark in collapsed navigation and generated desktop/installer icons.
