@@ -1,3 +1,7 @@
+# 0.6.4 — unreleased
+
+Workspace redesign, native rclone collaboration, signed membership, project-backed manuscripts, safer persistence and updater trust reconfiguration. See [release notes](docs/RELEASE_0.6.4.md) for limitations and validation.
+
 # Changelog
 
 All notable changes to this project will be documented in this file.

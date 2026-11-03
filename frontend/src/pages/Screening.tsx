@@ -120,7 +120,7 @@ export default function Screening({ project, onChange }: { project: Project; onC
         reviewerDecisions,
         conflictStatus,
         // Auto-set decision when reviewers agree
-        ...(conflictStatus === "resolved" ? { decision } : {}),
+        decision: conflictStatus === "resolved" ? decision : "unset" as const,
       };
     });
     onChange({ ...project, screening: { ...project.screening, [stage]: next } });
@@ -154,6 +154,9 @@ export default function Screening({ project, onChange }: { project: Project; onC
         ...i,
         stage: "full_text" as const,
         decision: "unset" as const,
+        reviewerDecisions: [],
+        conflictStatus: undefined,
+        exclusion_reason: undefined,
       }));
 
     if (toAdd.length === 0) {

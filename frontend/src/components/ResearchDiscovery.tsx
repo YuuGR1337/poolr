@@ -1,0 +1,11 @@
+import { useState } from "react";
+import { pubmedSearch, type SearchResponse } from "../lib/api/search";
+import { Card } from "./ui";
+
+export default function ResearchDiscovery({ topic }: { topic: string }) {
+  const [query, setQuery] = useState(topic);
+  const [result, setResult] = useState<SearchResponse | null>(null);
+  const [error, setError] = useState("");
+  const [busy, setBusy] = useState(false);
+  return <Card title="Check existing evidence"><p className="text-xs text-[var(--color-text-muted)] mb-3">Compare published studies and registered reviews before finalizing your question. This is an exploratory search, not proof of novelty.</p><label className="block text-xs mb-1" htmlFor="discovery-query">Research question or search terms</label><input id="discovery-query" className="input w-full" value={query} onChange={e => setQuery(e.target.value)} /><div className="flex flex-wrap gap-3 my-3"><button disabled={busy || !query.trim()} className="btn-primary" onClick={async () => { setBusy(true); setError(""); setResult(null); try { setResult(await pubmedSearch(query)); } catch(e) { setError(e instanceof Error ? e.message : "Search failed"); } finally { setBusy(false); } }}>{busy ? "Searching PubMed…" : "Search PubMed"}</button><a className="btn-ghost" href="https://www.crd.york.ac.uk/prospero/" target="_blank" rel="noreferrer">Open PROSPERO ↗</a><a className="btn-ghost" href={`https://scholar.google.com/scholar?q=${encodeURIComponent(query)}`} target="_blank" rel="noreferrer">Search Google Scholar ↗</a></div><p className="text-xs text-[var(--color-text-muted)]">PROSPERO and Scholar open in your browser. Copy your query into PROSPERO and retain relevant registration IDs in your protocol.</p>{error && <p role="alert" className="mt-3 text-red-500">{error}</p>}{result && <div className="mt-4"><p className="text-xs mb-2">{result.totalResults} PubMed matches; showing {result.results.length}. Query: {result.query}</p>{result.results.map((r,i) => <article className="border-t border-[var(--color-border)] py-3" key={r.id + i}><a className="text-sm underline" href={r.url || `https://pubmed.ncbi.nlm.nih.gov/?term=${encodeURIComponent(r.title)}`} target="_blank" rel="noreferrer">{r.title}</a><p className="text-xs text-[var(--color-text-muted)] mt-1">{r.authors} · {r.year}</p></article>)}</div>}</Card>;
+}

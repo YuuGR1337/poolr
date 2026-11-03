@@ -86,7 +86,7 @@ export default function Meta({ project, onChange }: { project: Project; onChange
 
     const measure = settings.measure || "OR";
     const invalid = studies.filter(s => {
-      if (["OR", "RR", "RD"].includes(measure)) return !s.int_events || !s.int_n || !s.ctrl_events || !s.ctrl_n;
+      if (["OR", "RR", "RD"].includes(measure)) return s.int_events == null || !s.int_n || s.ctrl_events == null || !s.ctrl_n;
       if (["MD", "SMD"].includes(measure)) return (!s.int_mean && s.int_mean !== 0) || !s.int_sd || (!s.ctrl_mean && s.ctrl_mean !== 0) || !s.ctrl_sd || !s.int_n || !s.ctrl_n;
       return false;
     });

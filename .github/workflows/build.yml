@@ -1,175 +1,86 @@
-name: Build & Release (web overhaul)
-
+name: Poolr checks and installers
 on:
   push:
-    branches: [develop, main]
-    tags: ['v*']
+    branches: [main, develop, 'release/**']
   pull_request:
-    branches: [develop, main]
-
+    branches: [main, develop]
+  workflow_dispatch:
 permissions:
-  contents: write
-
-env:
-  NODE_VERSION: "24"
-  DOTNET_VERSION: "8.0.x"
-  RUST_VERSION: "stable"
-
+  contents: read
 jobs:
-  # ── C# engine self-test (replaces the old Python parity oracle) ──
-  dotnet-tests:
-    name: C# Engine Tests
+  checks:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          dotnet-version: ${{ env.DOTNET_VERSION }}
-      - run: dotnet test engine/Poolr.Engine.Tests/Poolr.Engine.Tests.csproj -c Release
-
-  # ── New stack compile gate (runs on every PR) ──
-  web-build:
-    name: Web Stack Build (${{ matrix.os }})
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
-    steps:
-      - uses: actions/checkout@v7
-
-      - name: Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
+          node-version: '24'
           cache: npm
           cache-dependency-path: frontend/package-lock.json
-
-      - name: .NET
-        uses: actions/setup-dotnet@v4
+      - uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: ${{ env.DOTNET_VERSION }}
-
-      - name: Rust
-        uses: dtolnay/rust-toolchain@stable
-
-      - name: Linux deps (webkit2gtk)
-        if: runner.os == 'Linux'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
-
-      - name: Frontend build
+          dotnet-version: '8.0.x'
+      - run: sudo apt-get update && sudo apt-get install -y rclone
+      - run: dotnet test engine/Poolr.Engine.Tests/Poolr.Engine.Tests.csproj -c Release
+      - run: npm ci
         working-directory: frontend
-        run: |
-          npm ci
-          npm run build
-
-      - name: C# engine build
-        working-directory: engine
-        run: dotnet build Poolr.Engine.Api/Poolr.Engine.Api.csproj -c Release
-
-      # Publish the self-contained sidecar into src-tauri/resources/engine so the
-      # Tauri build script (which maps that folder as a bundle resource) finds it.
-      # The folder is gitignored, so every job that runs `cargo check`/`cargo build`
-      # must (re)publish it first — the release job does the same for tagged builds.
-      - name: Publish C# sidecar (win-x64) into resources
-        working-directory: engine
-        run: dotnet publish Poolr.Engine.Api/Poolr.Engine.Api.csproj -c Release -r win-x64 --self-contained true -o ../src-tauri/resources/engine
-
-      - name: Tauri cargo check
-        working-directory: src-tauri
-        run: cargo check
-
-  # ── Native installers (tagged release only — heavy 6-OS build) ──
-  release:
-    name: Native Installers (${{ matrix.os }})
-    needs: [dotnet-tests, web-build]
-    if: startsWith(github.ref, 'refs/tags/v')
-    runs-on: ${{ matrix.os }}
+      - run: npm run lint && npm run test -- --run && npm run build && npm audit --audit-level=high
+        working-directory: frontend
+      - run: python3 scripts/bundle-rclone.py --check
+  installers:
+    needs: checks
+    if: github.event_name != 'pull_request'
+    permissions:
+      contents: write
     strategy:
       fail-fast: false
       matrix:
         include:
-          - os: windows-latest
-            rid: win-x64
-            arch: x64
-            target: x86_64-pc-windows-msvc
-          - os: windows-latest
-            rid: win-x86
-            arch: x86
-            target: i686-pc-windows-msvc
-          - os: windows-latest
-            rid: win-arm64
-            arch: arm64
-            target: aarch64-pc-windows-msvc
-          - os: macos-latest
-            rid: osx-x64
-            arch: x64
-            target: x86_64-apple-darwin
-          - os: macos-latest
-            rid: osx-arm64
-            arch: arm64
-            target: aarch64-apple-darwin
-          - os: ubuntu-latest
-            rid: linux-x64
-            arch: x64
-            target: x86_64-unknown-linux-gnu
+          - {os: windows-latest, rid: win-x64, target: x86_64-pc-windows-msvc}
+          - {os: windows-latest, rid: win-x86, target: i686-pc-windows-msvc}
+          - {os: windows-latest, rid: win-arm64, target: aarch64-pc-windows-msvc}
+          - {os: macos-latest, rid: osx-x64, target: x86_64-apple-darwin}
+          - {os: macos-latest, rid: osx-arm64, target: aarch64-apple-darwin}
+          - {os: ubuntu-22.04, rid: linux-x64, target: x86_64-unknown-linux-gnu}
+    runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v7
-
-      - name: Node
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: npm
-          cache-dependency-path: frontend/package-lock.json
-
-      - name: .NET
-        uses: actions/setup-dotnet@v4
+          node-version: '24'
+      - uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: ${{ env.DOTNET_VERSION }}
-
-      - name: Rust
-        uses: dtolnay/rust-toolchain@stable
+          dotnet-version: '8.0.x'
+      - uses: dtolnay/rust-toolchain@stable
         with:
           targets: ${{ matrix.target }}
-
-      # Install frontend deps (used by src-tauri's `build` script via --prefix ../frontend).
-      - name: Frontend deps
-        working-directory: frontend
-        run: npm ci
-
-      # Install the Tauri CLI in src-tauri (projectPath). tauri-action runs
-      # `tauriScript` with cwd=src-tauri, so the CLI must resolve from there.
-      - name: Tauri CLI deps (src-tauri)
-        working-directory: src-tauri
-        run: npm ci
-
-      - name: Linux deps (webkit2gtk)
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Linux libraries
         if: runner.os == 'Linux'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
-
-      - name: Build self-contained C# sidecar
-        working-directory: engine
-        run: dotnet publish Poolr.Engine.Api/Poolr.Engine.Api.csproj -c Release -r ${{ matrix.rid }} --self-contained true -o ../src-tauri/resources/engine
-
-      - name: Tauri build (native installer)
+        run: sudo apt-get update && sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
+      - run: npm ci --prefix frontend
+      - run: dotnet publish engine/Poolr.Engine.Api/Poolr.Engine.Api.csproj -c Release -r ${{ matrix.rid }} --self-contained true -o src-tauri/resources/engine
+      - run: python scripts/bundle-rclone.py ${{ matrix.rid }} src-tauri/resources/engine
+      - name: Build signed installers into draft release
         uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ''
         with:
-          projectPath: src-tauri
-          tauriScript: npm run tauri
+          projectPath: .
+          tauriScript: npm --prefix frontend exec tauri
           args: --target ${{ matrix.target }}
-
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v4
+          tagName: v0.6.4
+          releaseName: Poolr v0.6.4
+          releaseBody: 'Drive collaboration and workspace redesign. See docs/RELEASE_0.6.4.md for setup, signing-key migration and verification limits.'
+          releaseDraft: true
+          prerelease: false
+      - uses: actions/upload-artifact@v4
         with:
-          name: poolr-${{ matrix.os }}-${{ matrix.arch }}
+          name: poolr-${{ matrix.rid }}
           path: |
             src-tauri/target/**/release/bundle/**/*.msi
             src-tauri/target/**/release/bundle/**/*.exe
@@ -177,23 +88,5 @@ jobs:
             src-tauri/target/**/release/bundle/**/*.deb
             src-tauri/target/**/release/bundle/**/*.rpm
             src-tauri/target/**/release/bundle/**/*.AppImage
-          if-no-files-found: ignore
-
-  publish:
-    name: Publish Release
-    needs: release
-    if: startsWith(github.ref, 'refs/tags/v')
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/download-artifact@v4
-        with:
-          path: artifacts
-          merge-multiple: true
-      - name: Create Release
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || 'nightly' }}
-          name: ${{ startsWith(github.ref, 'refs/tags/v') && format('poolr {0}', github.ref_name) || 'Nightly Build' }}
-          draft: ${{ !startsWith(github.ref, 'refs/tags/v') }}
-          generate_release_notes: true
-          files: artifacts/**/*
+            src-tauri/target/**/release/bundle/**/*.sig
+          if-no-files-found: error

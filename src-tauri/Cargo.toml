@@ -1,6 +1,6 @@
 [package]
 name = "poolr"
-version = "0.6.3"
+version = "0.6.4"
 description = "poolr — free, no-code desktop app for Systematic Reviews & Meta-Analyses (PRISMA 2020)"
 authors = ["M. Haris Awan <m.harisawan@icloud.com>"]
 license = "Proprietary"

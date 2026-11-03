@@ -3,6 +3,7 @@ use std::process::Child;
 
 use tauri::Manager;
 
+mod collaboration;
 mod updater;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -35,6 +36,7 @@ pub fn run() {
         .manage(updater::UpdaterState::default())
         .invoke_handler(tauri::generate_handler![
             updater::check_for_updates,
+            collaboration::collaboration_command,
             open_browser
         ])
         // Graceful close: window close / quit / Ctrl+C.
@@ -49,10 +51,14 @@ pub fn run() {
 
 #[tauri::command]
 fn open_browser(url: String) -> Result<(), String> {
+    let parsed = tauri::Url::parse(&url).map_err(|_| "Invalid URL")?;
+    if !matches!(parsed.scheme(), "http" | "https") || parsed.host_str().is_none() {
+        return Err("Only web links can be opened".into());
+    }
     #[cfg(windows)]
     {
-        std::process::Command::new("cmd")
-            .args(["/C", "start", "", &url])
+        std::process::Command::new("rundll32.exe")
+            .args(["url.dll,FileProtocolHandler", parsed.as_str()])
             .spawn()
             .map_err(|e| e.to_string())?;
     }
@@ -76,8 +82,12 @@ fn open_browser(url: String) -> Result<(), String> {
 struct EngineSidecar(std::sync::Mutex<Option<Child>>);
 
 fn kill_engine(app: &tauri::AppHandle) {
-    if let Some(mut child) = app.state::<EngineSidecar>().0.lock().unwrap().take() {
-        let _ = child.kill();
+    if let Some(state) = app.try_state::<EngineSidecar>() {
+        if let Ok(mut guard) = state.0.lock() {
+            if let Some(mut child) = guard.take() {
+                let _ = child.kill();
+            }
+        }
     }
 }
 
@@ -138,6 +148,10 @@ fn spawn_engine_sidecar(app: &tauri::AppHandle) {
     // log buffer filled, and inheriting our (windowless) console would
     // recreate the bug.
     let mut cmd = std::process::Command::new(&exe);
+    app.manage(collaboration::CollaborationRuntime {
+        executable: exe.clone(),
+        gate: std::sync::Arc::new(std::sync::Mutex::new(())),
+    });
 
     #[cfg(windows)]
     {

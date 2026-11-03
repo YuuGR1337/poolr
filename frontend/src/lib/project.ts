@@ -297,7 +297,8 @@ export interface AIScreeningResult {
 }
 
 export interface Project {
-  metadata: { version: string; created: string; title?: string; studyType?: string; config?: ProjectConfig };
+  metadata: { id?: string; revision?: number; version: string; created: string; title?: string; studyType?: string; config?: ProjectConfig };
+  manuscript?: { sections: Record<string, string>; sectionMetas: Record<string, { assignedTo?: string; reviewer?: string; dueDate?: string; status: "draft" | "review" | "changes_requested" | "approved" }>; comments?: { id: string; section: string; text: string; author: string; timestamp: string }[]; history?: { id: string; section: string; text: string; timestamp: string }[] };
   pico: Pico;
   protocol: ProtocolData;
   screening: { title_abstract: ScreeningItem[]; full_text: ScreeningItem[] };
@@ -330,7 +331,7 @@ export interface ProjectConfig {
 
 export function emptyProject(): Project {
   return {
-    metadata: { version: "0.6.0", created: new Date().toISOString(), title: "Untitled review" },
+    metadata: { id: crypto.randomUUID(), revision: 0, version: "0.6.4", created: new Date().toISOString(), title: "Untitled review" },
     pico: { population: "", intervention: "", comparator: "", outcomes: "" },
     protocol: { databases: "PubMed, Embase, Cochrane CENTRAL, Scopus", registration: "Not registered", objective: "" },
     screening: { title_abstract: [], full_text: [] },
@@ -411,6 +412,9 @@ export function normalizeProject(raw: unknown): Project {
 
   return {
     metadata: {
+      ...metadata,
+      id: str(metadata.id) || base.metadata.id,
+      revision: numOrNull(metadata.revision) ?? 0,
       version: str(metadata.version, base.metadata.version),
       created: str(metadata.created, base.metadata.created),
       title: str(metadata.title, base.metadata.title),
@@ -436,7 +440,7 @@ export function normalizeProject(raw: unknown): Project {
         .map((s) => ({
           ...(s as ExtractedStudy),
           study: str(s.study),
-          type: s.type === "continuous" || s.type === "survival" ? s.type : "binary",
+          type: ["binary", "continuous", "survival", "proportion", "rate", "correlation", "generic"].includes(s.type) ? s.type : "binary",
         })),
     },
     rob: {
@@ -467,6 +471,18 @@ export function normalizeProject(raw: unknown): Project {
       grade: arr<GradeOutcomeInput>(prisma.grade),
     },
     search: { databases: arr<Record<string, any>>(search.databases).filter((d) => d && typeof d === "object").map((d) => ({ name: str(d.name), query: str(d.query), results: numOrNull(d.results) })) },
+    ...(r.network ? { network: { ...obj(r.network), treatments: arr<string>(r.network.treatments), comparisons: arr(r.network.comparisons), results: r.network.results ?? null } as NetworkData } : {}),
+    ...(r.ipd ? { ipd: { datasets: arr(r.ipd.datasets), results: r.ipd.results ?? null } as IPDData } : {}),
+    ...(r.multilevel ? { multilevel: { effectSizes: arr(r.multilevel.effectSizes), results: r.multilevel.results ?? null } as MultilevelData } : {}),
+    ...(r.diagnostic ? { diagnostic: { studies: arr(r.diagnostic.studies), results: r.diagnostic.results ?? null } as DiagnosticData } : {}),
+    ...(r.proportions ? { proportions: { studies: arr(r.proportions.studies), results: r.proportions.results ?? null } as ProportionsData } : {}),
+    ...(r.qualitative ? { qualitative: { codes: arr(r.qualitative.codes), themes: arr(r.qualitative.themes), memos: arr(r.qualitative.memos) } as QualitativeData } : {}),
+    ...(r.manuscript ? { manuscript: {
+      sections: Object.fromEntries(Object.entries(obj(r.manuscript.sections)).filter(([, value]) => typeof value === "string")),
+      sectionMetas: obj(r.manuscript.sectionMetas),
+      history: arr(r.manuscript.history),
+      comments: arr(r.manuscript.comments),
+    } as Project["manuscript"] } : {}),
   };
 }
 

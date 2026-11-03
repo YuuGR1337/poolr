@@ -1,76 +1,37 @@
-// Auto-updater: checks GitHub daily, asks user before downloading/installing.
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { isTauri } from '@tauri-apps/api/core';
+import { check, type Update } from '@tauri-apps/plugin-updater';
 import { APP_VERSION } from './version';
 import { loadSettings, saveSettings } from './settings';
 
-export interface UpdateInfo {
-  available: boolean;
-  version: string;
-  body?: string;
-  date?: string;
-}
-
-// Tauri updater JS API
-declare global {
-  interface Window {
-    __TAURI_INTERNALS__?: {
-      updater: {
-        check: () => Promise<{ shouldUpdate: boolean; manifest?: { version: string; body?: string; date?: string } }>;
-        downloadAndInstall: () => Promise<void>;
-      };
-    };
-  }
-}
-
+export interface UpdateInfo { available: boolean; version: string; body?: string; date?: string }
 export function useUpdater() {
   const [updateInfo, setUpdateInfo] = useState<UpdateInfo | null>(null);
   const [checking, setChecking] = useState(false);
-
+  const [error, setError] = useState('');
+  const update = useRef<Update | null>(null);
   const checkForUpdates = useCallback(async () => {
-    setChecking(true);
+    if (!isTauri()) { setError('Update checks are available in the desktop app.'); return; }
+    setChecking(true); setError('');
     try {
-      const tauri = window.__TAURI_INTERNALS__;
-      if (!tauri?.updater) {
-        setUpdateInfo({ available: false, version: APP_VERSION });
-        return;
-      }
-      const result = await tauri.updater.check();
-      setUpdateInfo({
-        available: result.shouldUpdate,
-        version: result.manifest?.version ?? APP_VERSION,
-        body: result.manifest?.body,
-        date: result.manifest?.date,
-      });
-      // Persist last check time
-      const settings = loadSettings();
-      settings.lastUpdateCheck = new Date().toISOString();
-      saveSettings(settings);
-    } catch (e) {
-      console.warn('Update check failed:', e);
-      setUpdateInfo({ available: false, version: APP_VERSION });
-    } finally {
-      setChecking(false);
-    }
+      const next = await check();
+      await update.current?.close(); update.current = next;
+      setUpdateInfo({ available: !!next, version: next?.version ?? APP_VERSION, body: next?.body, date: next?.date });
+      const settings = loadSettings(); settings.lastUpdateCheck = new Date().toISOString(); saveSettings(settings);
+    } catch (e) { setUpdateInfo(null); setError(String(e)); }
+    finally { setChecking(false); }
   }, []);
-
   const downloadUpdate = useCallback(async () => {
-    try {
-      await window.__TAURI_INTERNALS__?.updater.downloadAndInstall();
-    } catch (e) {
-      console.error('Download failed:', e);
-    }
+    if (!update.current) return;
+    setChecking(true); setError('');
+    try { await update.current.downloadAndInstall(); }
+    catch (e) { setError(String(e)); }
+    finally { setChecking(false); }
   }, []);
-
-  // Check on mount if auto-update is enabled
   useEffect(() => {
-    const settings = loadSettings();
-    if (settings.autoUpdateEnabled !== false) {
-      checkForUpdates();
-    }
-    // Daily interval
-    const interval = setInterval(checkForUpdates, 24 * 60 * 60 * 1000);
-    return () => clearInterval(interval);
+    const automatic = () => { if (isTauri() && loadSettings().autoUpdateEnabled !== false) void checkForUpdates(); };
+    automatic(); const interval = setInterval(automatic, 86400000);
+    return () => { clearInterval(interval); void update.current?.close(); };
   }, [checkForUpdates]);
-
-  return { updateInfo, checking, checkForUpdates, downloadUpdate };
+  return { updateInfo, checking, error, checkForUpdates, downloadUpdate };
 }

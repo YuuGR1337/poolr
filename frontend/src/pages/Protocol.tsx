@@ -1,4 +1,5 @@
 import type { Project } from "../lib/project";
+import ResearchDiscovery from "../components/ResearchDiscovery";
 import { Card, Input, Textarea, SectionLabel, Button } from "../components/ui";
 import { suggestPICO } from "../lib/ai";
 import { Sparkles, Loader2 } from "lucide-react";
@@ -23,6 +24,7 @@ export default function Protocol({ project, onChange }: { project: Project; onCh
 
   return (
     <div className="space-y-3">
+      <ResearchDiscovery topic={project.metadata.title || project.protocol.objective} />
       <Card title="Review title" right={<StepCommentsButton step="protocol" stepTitle="Protocol & PICO" />}>
         <Input
           value={project.metadata.title ?? ""}

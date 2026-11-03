@@ -86,7 +86,7 @@ export function StudySelector({
     <div className="relative">
       <button
         onClick={() => setShowDropdown(!showDropdown)}
-        className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-white/10 bg-[rgba(12,13,17,0.5)] hover:bg-[rgba(12,13,17,0.7)] backdrop-blur-xl transition-colors text-sm"
+        className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text)] hover:bg-[var(--color-surface-2)] transition-colors text-sm"
       >
         <FolderOpen size={14} />
         <span className="max-w-32 truncate">
@@ -96,7 +96,7 @@ export function StudySelector({
       </button>
 
       {showDropdown && (
-        <div className="absolute top-full left-0 mt-1 w-64 rounded-lg shadow-xl z-50 text-[var(--color-text)] border border-white/10 bg-[rgba(12,13,17,0.7)] backdrop-blur-xl">
+        <div className="absolute top-full left-0 mt-1 w-64 rounded-lg shadow-xl z-50 text-[var(--color-text)] border border-[var(--color-border)] bg-[var(--color-surface)]">
           <div className="p-2 border-b border-[var(--color-border)]">
             <div className="text-xs text-[var(--color-muted-foreground)] px-2 py-1">Studies</div>
           </div>

@@ -1,13 +1,13 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
   "productName": "poolr",
-  "version": "0.6.3",
+  "version": "0.6.4",
   "identifier": "com.poolr.desktop",
   "build": {
     "frontendDist": "../frontend/dist",
     "devUrl": "http://localhost:1420",
-    "beforeDevCommand": "npm run dev",
-    "beforeBuildCommand": "npm run build"
+    "beforeDevCommand": "npm --prefix frontend run dev",
+    "beforeBuildCommand": "npm --prefix frontend run build"
   },
   "app": {
     "windows": [
@@ -24,12 +24,12 @@
       }
     ],
     "security": {
-      "csp": null
+      "csp": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self' data:; connect-src 'self' ipc: http://ipc.localhost http://127.0.0.1:5180 https:; object-src 'none'; base-uri 'self'; frame-src 'none'"
     }
   },
   "bundle": {
     "active": true,
-    "targets": ["msi", "nsis", "dmg", "deb", "rpm"],
+    "targets": "all",
     "resources": {
       "resources/engine": "engine"
     },
@@ -46,9 +46,18 @@
       }
     },
     "publisher": "M. Haris Awan",
-    "copyright": "© 2026 M. Haris Awan (Proprietary License)",
+    "copyright": "\u00a9 2026 M. Haris Awan (Proprietary License)",
     "category": "Education",
     "shortDescription": "Proprietary Systematic Review & Meta-Analysis desktop app (PRISMA 2020)",
-    "longDescription": "poolr is a proprietary desktop app for systematic reviews and meta-analyses."
+    "longDescription": "poolr is a proprietary desktop app for systematic reviews and meta-analyses.",
+    "createUpdaterArtifacts": true
+  },
+  "plugins": {
+    "updater": {
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IENCNTAwRTU2QTY0RUNFQTkKUldTcHprNm1WZzVReTlQbWNCU01ydXRyazRtQzVEbCtOaWJmM1BIK0NtNXdoaHZWS2dWa2lYUFoK",
+      "endpoints": [
+        "https://github.com/harisawan-bit/poolr/releases/latest/download/latest.json"
+      ]
+    }
   }
 }

@@ -70,7 +70,7 @@ export default function SwitchButton({
       <div className={cn("flex items-center gap-2", "transition-all duration-300 ease-out")}>
         <motion.span
           key={theme}
-          animate={{ rotate: theme === "dark" ? 180 : 0 }}
+          animate={{ rotate: 0 }}
           transition={{ duration: 0.7, ease: "easeInOut" }}
           className="flex"
         >

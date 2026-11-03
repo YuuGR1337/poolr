@@ -209,7 +209,7 @@ export default function AnalysisHub({ project, onProjectChange }: Props) {
         <div className="flex items-center gap-1.5 text-xs text-[var(--color-muted-foreground)]">
           <CheckCircle2 size={13} className="text-green-500" />
           <span className="font-mono font-medium text-[var(--color-text)]">
-            C# Native Engine v{APP_VERSION} · 100% Dedicated UI Coverage
+            Choose a method that fits your research question and data
           </span>
         </div>
       </div>
@@ -235,10 +235,10 @@ export default function AnalysisHub({ project, onProjectChange }: Props) {
                     size={16}
                     className={`shrink-0 ${isActive ? "text-blue-600 dark:text-blue-400" : "text-[var(--color-text-muted)]"}`}
                   />
-                  <span className="text-[12.5px] font-semibold text-[var(--color-text)] truncate">{cat.label}</span>
+                  <span className="text-[12.5px] font-semibold text-[var(--color-text)] whitespace-normal break-words">{cat.label}</span>
                 </div>
                 <span
-                  className={`shrink-0 max-w-[110px] truncate text-[9.5px] px-1.5 py-0.5 rounded font-mono font-medium border ${
+                  className={`shrink-0  whitespace-normal break-words text-[9.5px] px-1.5 py-0.5 rounded font-mono font-medium border ${
                     isActive
                       ? "bg-blue-600/10 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400 border-blue-600/30 dark:border-blue-500/30"
                       : "bg-[var(--color-border)]/50 text-[var(--color-text-muted)] border-[var(--color-border)]"
@@ -247,7 +247,7 @@ export default function AnalysisHub({ project, onProjectChange }: Props) {
                   {cat.badge}
                 </span>
               </div>
-              <p className="text-[11px] text-[var(--color-text-muted)] leading-relaxed line-clamp-2 break-words">
+              <p className="text-[11px] text-[var(--color-text-muted)] leading-relaxed  break-words">
                 {cat.description}
               </p>
             </button>
@@ -472,23 +472,23 @@ function EngineCatalogView({
           >
             <div>
               <div className="flex items-center justify-between gap-2 mb-1.5 min-w-0">
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-blue-500/10 text-blue-600 dark:text-blue-400 font-semibold truncate shrink-0">
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-blue-500/10 text-blue-600 dark:text-blue-400 font-semibold whitespace-normal break-words shrink-0">
                   {item.tag}
                 </span>
-                <span className="text-[10px] font-mono text-[var(--color-muted-foreground)] truncate">
+                <span className="text-[10px] font-mono text-[var(--color-muted-foreground)] whitespace-normal break-words">
                   {item.endpoint}
                 </span>
               </div>
-              <h3 className="text-xs font-semibold text-[var(--color-text)] group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors truncate">
+              <h3 className="text-xs font-semibold text-[var(--color-text)] group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors whitespace-normal break-words">
                 {item.name}
               </h3>
-              <p className="text-[11px] text-[var(--color-muted-foreground)] mt-1 line-clamp-2 break-words">
+              <p className="text-[11px] text-[var(--color-muted-foreground)] mt-1  break-words">
                 {item.description}
               </p>
             </div>
 
             <div className="mt-3 pt-2 border-t border-[var(--color-border)]/50 flex items-center justify-between text-[10.5px]">
-              <span className="text-[var(--color-muted-foreground)] truncate mr-2">Inputs: {item.inputs}</span>
+              <span className="text-[var(--color-muted-foreground)] whitespace-normal break-words mr-2">Inputs: {item.inputs}</span>
               <span className="flex items-center text-blue-600 dark:text-blue-400 font-medium group-hover:translate-x-0.5 transition-transform shrink-0">
                 Open <ChevronRight size={12} />
               </span>

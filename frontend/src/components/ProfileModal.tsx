@@ -1,35 +1,9 @@
+import { avatars } from "./kokonut/ProfileSetup";
 import { useState } from 'react';
 import { motion } from 'motion/react';
 import { X } from 'lucide-react';
 import { Input, Button } from './ui';
 import type { ProfileData } from './kokonut/ProfileSetup';
-
-function AvatarSvg({ bg, fg, mouth = "#000000", seed = 0 }: { bg: string; fg: string; mouth?: string; seed?: number }) {
-  return (
-    <svg aria-hidden="true" fill="none" height="40" viewBox="0 0 36 36" width="40" xmlns="http://www.w3.org/2000/svg">
-      <rect fill={bg} height="36" width="36" />
-      <rect
-        fill={fg}
-        height="36"
-        rx="6"
-        transform={seed % 2 ? "translate(5 -1) rotate(55 18 18) scale(1.1)" : "translate(9 -5) rotate(219 18 18) scale(1)"}
-        width="36"
-      />
-      <g transform={`translate(${seed === 3 ? -3 : 4.5} ${seed === 3 ? 3.5 : -4}) rotate(${seed === 3 ? 7 : 9} 18 18)`}>
-        <path d="M15 19c2 1 4 1 6 0" fill="none" stroke={mouth} strokeLinecap="round" />
-        <rect fill={mouth} height="2" rx="1" width="1.5" x={seed === 3 ? 12 : 10} y="14" />
-        <rect fill={mouth} height="2" rx="1" width="1.5" x={seed === 3 ? 22 : 24} y="14" />
-      </g>
-    </svg>
-  );
-}
-
-const avatars = [
-  { id: 1, svg: <AvatarSvg bg="#ff005b" fg="#ffb238" seed={0} />, alt: "Ember" },
-  { id: 2, svg: <AvatarSvg bg="#ff7d10" fg="#0a0310" mouth="#FFFFFF" seed={1} />, alt: "Amber" },
-  { id: 3, svg: <AvatarSvg bg="#0a0310" fg="#ff005b" mouth="#FFFFFF" seed={2} />, alt: "Ink" },
-  { id: 4, svg: <AvatarSvg bg="#d8fcb3" fg="#89fcb3" seed={3} />, alt: "Sage" },
-];
 
 interface Props {
   profile: ProfileData | null;
