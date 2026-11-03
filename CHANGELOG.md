@@ -4,6 +4,8 @@ Workspace redesign, native rclone collaboration, signed membership, project-back
 
 Branding follows the active appearance: OS preference on first launch, then the user's saved choice. Expanded navigation uses a theme-appropriate wordmark; collapsed navigation and generated installer icons use the pin mark.
 
+The desktop app icon uses a larger, centered pin on a fully opaque light tile so its mark stays visible at small launcher sizes and against dark desktop themes.
+
 # Changelog
 
 All notable changes to this project will be documented in this file.
