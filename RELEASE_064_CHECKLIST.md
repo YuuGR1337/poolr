@@ -4,7 +4,7 @@ Branch: `release/v0.6.4`; pull request: https://github.com/harisawan-bit/poolr/p
 
 ## Implemented
 
-- [x] Profile/team header, supplied wordmark, pin-only collapsed sidebar, generated pin app icons and theme controls
+- [x] Profile/team header, supplied light/dark wordmarks, pin-only collapsed sidebar, theme-aware OS default and generated pin app icons
 - [x] Readable analysis hub and provider favicons with text labels
 - [x] Review/outcome presets, research discovery and learning workspace
 - [x] Stable project identities and advanced-data migration preservation
@@ -19,7 +19,7 @@ Branch: `release/v0.6.4`; pull request: https://github.com/harisawan-bit/poolr/p
 - [x] 227 engine tests, including two independent signing peers over actual rclone local transport
 - [x] 42 frontend tests, production build, lint gate and dependency audit
 - [x] C# format/security checks; Rust format and Clippy with warnings denied
-- [x] Browser routes, light/dark themes, sidebar collapse and screenshots
+- [x] Browser routes and all four logo combinations: light/dark × expanded/collapsed sidebar
 - [x] Browser-to-engine hazard-ratio input preservation and zero-event analysis
 - [x] Removed HTTP file endpoint returns 404; unauthorized web origin returns 403
 - [x] Real Google Drive transport with two app identities using one Google account; disposable fixture moved to Drive trash

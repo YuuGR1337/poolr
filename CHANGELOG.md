@@ -1,6 +1,8 @@
-# 0.6.4 — unreleased
+# 0.6.4 — release candidate
 
 Workspace redesign, native rclone collaboration, signed membership, project-backed manuscripts, safer persistence and updater trust reconfiguration. See [release notes](docs/RELEASE_0.6.4.md) for limitations and validation.
+
+Branding follows the active appearance: OS preference on first launch, then the user's saved choice. Expanded navigation uses a theme-appropriate wordmark; collapsed navigation and generated installer icons use the pin mark.
 
 # Changelog
 

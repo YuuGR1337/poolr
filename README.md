@@ -78,9 +78,12 @@ This repository's [existing proprietary license](LICENSE) remains in force. Usin
 
 ## Product tour
 
-Poolr keeps the review workflow in one desktop workspace. The left navigation can collapse to the pin mark; the full wordmark is used when expanded. Profile, avatar, active team, appearance, save state and connection status stay in the workspace chrome. The pin mark is used in collapsed navigation, browser tabs, app icons and installers. The full wordmark file is [`poolr-logo.png`](frontend/public/poolr-brand.png); the standalone vector pin is [`poolr-mark.svg`](frontend/public/poolr-mark.svg).
+Poolr keeps the review workflow in one desktop workspace. The left navigation can collapse to the pin mark; the full wordmark is used when expanded. Profile, avatar, active team, appearance, save state and connection status stay in the workspace chrome. The pin mark is used in collapsed navigation, browser tabs, app icons and installers. Expanded navigation switches between dark-ink and white wordmarks to follow the selected theme; first launch follows the operating system, and the appearance control can override it. The wordmarks are [`poolr-logo.png`](frontend/public/poolr-brand.png) and [`poolr-logo-dark.png`](frontend/public/poolr-brand-dark.png); vector pin variants are [`poolr-mark.svg`](frontend/public/poolr-mark.svg) and [`poolr-mark-dark.svg`](frontend/public/poolr-mark-dark.svg).
 
-![Poolr logo](frontend/public/poolr-brand.png)
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="frontend/public/poolr-brand-dark.png">
+  <img src="frontend/public/poolr-brand.png" alt="Poolr research workspace logo">
+</picture>
 
 | Screen | What it does |
 |---|---|
