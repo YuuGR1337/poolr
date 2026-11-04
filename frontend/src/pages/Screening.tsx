@@ -56,7 +56,9 @@ export default function Screening({ project, onChange }: { project: Project; onC
   useEffect(() => () => { if (noticeTimer.current != null) window.clearTimeout(noticeTimer.current); }, []);
   // v0.5.3 — number of independent reviewers screening (dual screening support).
   const [reviewers, setReviewers] = useState(2);
-  const [tab, setTab] = useState<"screening" | "dual_entry" | "conflicts" | "living_review">("screening");
+  const [tab, setTab] = useState<"screening" | "dual_entry" | "conflicts" | "living_review">(
+    () => (typeof window !== "undefined" && new URLSearchParams(window.location.search).get("tab") as any) || "screening"
+  );
   const [activeReviewerIdx, setActiveReviewerIdx] = useState(0);
   const viewportRef = useRef<HTMLDivElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
