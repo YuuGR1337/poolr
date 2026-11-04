@@ -70,8 +70,8 @@ jobs:
         uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
-          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ''
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.POOLR_UPDATER_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.POOLR_UPDATER_KEY_PASSWORD }}
           APPIMAGE_EXTRACT_AND_RUN: '1'
           NO_STRIP: '1'
         with:
@@ -79,11 +79,11 @@ jobs:
           projectPath: .
           tauriScript: npm run tauri
           args: --target ${{ matrix.target }}
-          tagName: v0.6.4
-          releaseName: Poolr v0.6.4
+          tagName: v0.6.5
+          releaseName: Poolr v0.6.5
           releaseBody: 'Drive collaboration and workspace redesign. See docs/RELEASE_0.6.4.md for setup, signing-key migration and verification limits.'
           releaseDraft: true
-          prerelease: false
+          prerelease: true
       - name: Verify AppImage excludes the incompatible Wayland client library
         if: matrix.rid == 'linux-x64'
         shell: bash
