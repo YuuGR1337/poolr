@@ -213,12 +213,64 @@
       },
       {
         "id": "r2",
+        "study": "Ferguson & Simes 1949",
+        "tool": "RoB2",
+        "overall": "Low",
+        "domains": {
+          "Randomization": "Low",
+          "Deviations from intended": "Low",
+          "Missing outcome": "Low",
+          "Measurement of outcome": "Low",
+          "Selection of reported result": "Low"
+        }
+      },
+      {
+        "id": "r3",
+        "study": "Rosenthal et al 1960",
+        "tool": "RoB2",
+        "overall": "Some concerns",
+        "domains": {
+          "Randomization": "Some concerns",
+          "Deviations from intended": "Low",
+          "Missing outcome": "Low",
+          "Measurement of outcome": "Low",
+          "Selection of reported result": "Low"
+        }
+      },
+      {
+        "id": "r4",
         "study": "Hart & Sutherland 1977",
         "tool": "RoB2",
         "overall": "Low",
         "domains": {
           "Randomization": "Low",
           "Deviations from intended": "Low",
+          "Missing outcome": "Low",
+          "Measurement of outcome": "Low",
+          "Selection of reported result": "Low"
+        }
+      },
+      {
+        "id": "r5",
+        "study": "Frimodt-Moller 1973",
+        "tool": "RoB2",
+        "overall": "Low",
+        "domains": {
+          "Randomization": "Low",
+          "Deviations from intended": "Low",
+          "Missing outcome": "Low",
+          "Measurement of outcome": "Low",
+          "Selection of reported result": "Low"
+        }
+      },
+      {
+        "id": "r6",
+        "study": "Stein & Aronson 1953",
+        "tool": "RoB2",
+        "overall": "Some concerns",
+        "domains": {
+          "Randomization": "Low",
+          "Deviations from intended": "Some concerns",
           "Missing outcome": "Low",
           "Measurement of outcome": "Low",
           "Selection of reported result": "Low"

@@ -23,7 +23,7 @@ var app = builder.Build();
 app.Use(async (ctx, next) =>
 {
     var origin = ctx.Request.Headers.Origin.ToString();
-    var allowed = new[] { "http://localhost:1420", "http://127.0.0.1:1420", "tauri://localhost", "http://tauri.localhost", "https://tauri.localhost" };
+    var allowed = new[] { "http://localhost:1420", "http://127.0.0.1:1420", "http://localhost:8089", "http://127.0.0.1:8089", "http://localhost:5173", "http://127.0.0.1:5173", "tauri://localhost", "http://tauri.localhost", "https://tauri.localhost" };
     if (origin.Length > 0 && !allowed.Contains(origin)) { ctx.Response.StatusCode = 403; return; }
     if (origin.Length > 0) ctx.Response.Headers.Append("Access-Control-Allow-Origin", origin);
     ctx.Response.Headers.Append("Vary", "Origin");

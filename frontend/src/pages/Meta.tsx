@@ -247,7 +247,7 @@ export default function Meta({ project, onChange }: { project: Project; onChange
     if (diagSvg[figTab]) return;
 
     setDiagLoading(true);
-    const diagPayload = {
+    const diagPayload = figTab === "funnel_contour" ? resp : {
       measure: settings.measure || "OR",
       names: resp.studies.map((s) => s.study),
       effs: resp.studies.map((s) => s.effect),
