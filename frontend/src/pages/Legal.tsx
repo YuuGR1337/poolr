@@ -137,7 +137,7 @@ const EULA_SECTIONS = [
   },
   {
     title: "7. Citation & Attribution",
-    body: `If you publish research results obtained using Poolr, you are requested to cite the Software: Awan, M. H. (2026). Poolr: Desktop platform for systematic reviews & meta-analyses (Version 0.6.3). The Method Lab. https://github.com/harisawan-bit/poolr`,
+    body: `If you publish research results obtained using Poolr, you are requested to cite the Software: Awan, M. H. (2026). Poolr: Desktop platform for systematic reviews & meta-analyses (Version 0.6.4). The Method Lab. https://github.com/harisawan-bit/poolr`,
   },
   {
     title: "8. Medical & Scientific Research Disclaimer",
@@ -178,7 +178,7 @@ export default function LegalCenter() {
         <>
           <Card title="Legal Center">
             <p className="mb-4 text-[12.5px] text-[var(--color-text-muted)]">
-              Poolr v0.6.3 — Commercial Platform · The Method Lab. Please review our legal documents.
+              Poolr v0.6.4 — Commercial Platform · The Method Lab. Please review our legal documents.
             </p>
           </Card>
 
@@ -230,7 +230,7 @@ export default function LegalCenter() {
       {page !== "menu" && (
         <Card title={page === "tos" ? "Terms of Service" : page === "privacy" ? "Privacy Policy" : "End User License Agreement"}>
           <p className="mb-4 text-[11px] text-[var(--color-text-muted)]">
-            Effective Date: September 18, 2026 · Last Updated: September 18, 2026 · Version 0.6.3
+            Effective Date: September 18, 2026 · Last Updated: September 18, 2026 · Version 0.6.4
           </p>
           <div className="max-h-[calc(100vh-280px)] space-y-5 overflow-y-auto pr-2">
             {sections.map((section, i) => (

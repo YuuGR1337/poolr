@@ -74,7 +74,7 @@ export default function Meta({ project, onChange }: { project: Project; onChange
   const [copied, setCopied] = useState(false);
 
   const mounted = useRef(true);
-  useEffect(() => () => { mounted.current = false; }, []);
+  useEffect(() => { mounted.current = true; return () => { mounted.current = false; }; }, []);
 
   const set = (patch: Partial<ExtendedMetaRequest>) => {
     onChange({ ...project, meta: { ...project.meta, settings: { ...settings, ...patch } } });
@@ -86,7 +86,7 @@ export default function Meta({ project, onChange }: { project: Project; onChange
 
     const measure = settings.measure || "OR";
     const invalid = studies.filter(s => {
-      if (["OR", "RR", "RD"].includes(measure)) return !s.int_events || !s.int_n || !s.ctrl_events || !s.ctrl_n;
+      if (["OR", "RR", "RD"].includes(measure)) return s.int_events == null || !s.int_n || s.ctrl_events == null || !s.ctrl_n;
       if (["MD", "SMD"].includes(measure)) return (!s.int_mean && s.int_mean !== 0) || !s.int_sd || (!s.ctrl_mean && s.ctrl_mean !== 0) || !s.ctrl_sd || !s.int_n || !s.ctrl_n;
       return false;
     });
@@ -99,14 +99,7 @@ export default function Meta({ project, onChange }: { project: Project; onChange
     }
 
     try {
-      const inputStudies = studies.map(s => ({
-        study: s.study || "Unknown",
-        int_events: s.int_events ?? 0, int_n: s.int_n ?? 0,
-        ctrl_events: s.ctrl_events ?? 0, ctrl_n: s.ctrl_n ?? 0,
-        int_mean: s.int_mean ?? undefined, int_sd: s.int_sd ?? undefined,
-        ctrl_mean: s.ctrl_mean ?? undefined, ctrl_sd: s.ctrl_sd ?? undefined,
-        subgroup: s.subgroup || "",
-      }));
+      const inputStudies = studies.map(s => ({ ...s, study: s.study || "Unknown" }));
 
       let r: ExtendedMetaResponse;
       let plotDataResult: any;
@@ -119,19 +112,8 @@ export default function Meta({ project, onChange }: { project: Project; onChange
           knapp_hartung: !!settings.knapp_hartung,
           bias_depth: settings.bias_depth ?? "egger",
           sensitivity: true,
-          data: inputStudies.map(s => ({
-            study: s.study,
-            int_events: s.int_events,
-            int_n: s.int_n,
-            ctrl_events: s.ctrl_events,
-            ctrl_n: s.ctrl_n,
-            int_mean: s.int_mean,
-            int_sd: s.int_sd,
-            ctrl_mean: s.ctrl_mean,
-            ctrl_sd: s.ctrl_sd,
-            subgroup: s.subgroup,
-          })),
-        }, 5000);
+          data: inputStudies,
+        }, 30000);
 
         r = backendResp;
         plotDataResult = {
@@ -152,44 +134,7 @@ export default function Meta({ project, onChange }: { project: Project; onChange
           },
         };
       } catch (backendErr) {
-        console.warn("Backend /api/meta2 unavailable, using local meta-engine:", backendErr);
-        const result = runMetaAnalysis(
-          { measure: settings.measure as any, model: settings.model as any, method: (settings.method as any) || "DL" },
-          inputStudies as any
-        );
-
-        r = {
-          model: result.pooled.ci_method || "random",
-          measure: settings.measure || "OR",
-          method: settings.method || "DL",
-          k: result.studies.length,
-          studies: result.studies.map(s => ({
-            study: s.study, effect: s.effect, ci_lower: s.ci_lower,
-            ci_upper: s.ci_upper, weight: s.weight / 100, subgroup: s.subgroup,
-          })),
-          pooled: { ...result.pooled, model: settings.model || "random" },
-          heterogeneity: result.heterogeneity,
-          subgroups_extended: result.subgroups ? {
-            groups: result.subgroups.groups.map((g: any) => ({
-              name: g.name, measure: settings.measure || "OR", effect: g.effect,
-              ci_lower: g.ci_lower, ci_upper: g.ci_upper, k: g.k, i2_within: g.i2_within,
-              q_within: 0, df_within: g.k - 1, tau2_within: 0,
-            })),
-            between: result.subgroups.between,
-          } : undefined,
-          sensitivity: result.sensitivity ? {
-            leave_one_out: result.sensitivity.leave_one_out.map((l: any) => ({
-              excluded: l.excluded, k: 0, effect: l.effect, ci_lower: l.ci_lower,
-              ci_upper: l.ci_upper, p: 0, i2: l.i2,
-            })),
-            cumulative: [], fixed_vs_random: null,
-            influence_max_change_pct: result.sensitivity.influence_max_change_pct,
-            most_influential: result.sensitivity.most_influential,
-          } : undefined,
-          publication_bias: result.publication_bias,
-          knapp_hartung: settings.knapp_hartung,
-        };
-        plotDataResult = result;
+        throw backendErr;
       }
 
       onChange({ ...project, meta: { ...project.meta, settings, results: r as ExtendedMetaResponse } });

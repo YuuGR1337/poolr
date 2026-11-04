@@ -1,3 +1,11 @@
+# 0.6.4 — release candidate
+
+Workspace redesign, native rclone collaboration, signed membership, project-backed manuscripts, safer persistence and updater trust reconfiguration. See [release notes](docs/RELEASE_0.6.4.md) for limitations and validation.
+
+Branding follows the active appearance: OS preference on first launch, then the user's saved choice. Expanded navigation uses a theme-appropriate wordmark; collapsed navigation and generated installer icons use the pin mark.
+
+The desktop app icon uses a larger, centered pin on a fully opaque light tile so its mark stays visible at small launcher sizes and against dark desktop themes.
+
 # Changelog
 
 All notable changes to this project will be documented in this file.
@@ -125,3 +133,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 ### Removed
 ### Security
+- Linux AppImage: updated the Tauri bundler to keep Wayland/XKB/XCB display libraries host-provided, preventing EGL startup failures on newer Mesa/WebKit systems. Added a build gate that rejects AppImages bundling those libraries.
+- Branding: use the supplied poolr wordmark in the expanded workspace and documentation, the pin mark in collapsed navigation and generated desktop/installer icons.

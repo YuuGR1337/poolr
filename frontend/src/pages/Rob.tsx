@@ -100,7 +100,7 @@ export default function Rob({ project, onChange }: { project: Project; onChange:
           <Select className="w-auto" value={tool} onChange={(e) => setTool(e.target.value as (typeof TOOLS)[number])}>
             {TOOLS.map((t) => <option key={t} value={t}>{t}</option>)}
           </Select>
-          <button className="btn-primary" onClick={add} disabled={!studyNames.length}>+ Add</button>
+          <button className="btn-primary" onClick={add}>+ Add</button>
           <StepCommentsButton step="rob" stepTitle="Risk of Bias" />
         </div>
       }>

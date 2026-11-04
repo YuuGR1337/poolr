@@ -384,8 +384,10 @@ export default function Extraction({ project, onChange }: { project: Project; on
             <>
               <Field label="Int. mean"><Input type="number" step="any" value={form.int_mean ?? ""} onChange={(e) => set({ int_mean: num(e.target.value) })} /></Field>
               <Field label="Int. SD"><Input type="number" step="any" value={form.int_sd ?? ""} onChange={(e) => set({ int_sd: num(e.target.value) })} /></Field>
+              <Field label="Int. n"><Input type="number" value={form.int_n ?? ""} onChange={(e) => set({ int_n: num(e.target.value) })} /></Field>
               <Field label="Ctrl mean"><Input type="number" step="any" value={form.ctrl_mean ?? ""} onChange={(e) => set({ ctrl_mean: num(e.target.value) })} /></Field>
               <Field label="Ctrl SD"><Input type="number" step="any" value={form.ctrl_sd ?? ""} onChange={(e) => set({ ctrl_sd: num(e.target.value) })} /></Field>
+              <Field label="Ctrl n"><Input type="number" value={form.ctrl_n ?? ""} onChange={(e) => set({ ctrl_n: num(e.target.value) })} /></Field>
             </>
           )}
           {form.type === "survival" && (

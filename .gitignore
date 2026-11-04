@@ -37,6 +37,12 @@ src-tauri/resources/engine/
 # .NET
 engine/**/bin/
 engine/**/obj/
+service/**/bin/
+service/**/obj/
+.env
+.env.*
+!.env.example
+*.key
 
 # Node deps (frontend + src-tauri)
 frontend/node_modules/

@@ -1,6 +1,6 @@
 // External database search functions (PubMed, OpenAlex, Crossref, ClinicalTrials.gov, etc.)
 import { postJson } from "./client";
-import { parseMedline } from "../importScreening";
+
 
 export interface SearchResult {
   id: string;
@@ -34,24 +34,6 @@ export async function pubmedSearch(query: string, apiKey?: string): Promise<Sear
       const idList: string[] = searchData?.esearchresult?.idlist || [];
       const totalResults = parseInt(searchData?.esearchresult?.count || "0", 10);
       if (idList.length === 0) return { query, database: "PubMed", totalResults: 0, results: [] };
-
-      const medlineUrl = `https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=${idList.join(",")}&rettype=medline&retmode=text${apiKey ? `&api_key=${apiKey}` : ""}`;
-      const medlineRes = await fetch(medlineUrl);
-      if (medlineRes.ok) {
-        const text = await medlineRes.text();
-        const records = parseMedline(text);
-        const results: SearchResult[] = records.map((rec) => {
-          const pmid = rec.title.match(/^(\d+)$/)?.[1] || "";
-          return {
-            id: `pubmed-${pmid}`, title: rec.title || "Untitled", authors: "",
-            year: new Date().getFullYear(), source: "PubMed",
-            abstract: rec.abstract || "", doi: undefined, pmid,
-            url: pmid ? `https://pubmed.ncbi.nlm.nih.gov/${pmid}/` : "",
-            database: "PubMed",
-          };
-        });
-        if (results.length > 0) return { query, database: "PubMed", totalResults, results };
-      }
 
       const eSummaryUrl = `https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=pubmed&id=${idList.join(",")}&retmode=json${apiKey ? `&api_key=${apiKey}` : ""}`;
       const sumRes = await fetch(eSummaryUrl);

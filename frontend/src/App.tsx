@@ -1,4 +1,9 @@
-import { Component, useEffect, useMemo, useRef, useState, type ErrorInfo, type ReactNode } from "react";
+import { DriveProvider, useDrive } from "./context/DriveContext";
+const TeamWorkspace = lazy(() => import("./pages/TeamWorkspace"));
+
+const Learn = lazy(() => import("./pages/Learn"));
+import { avatars } from "./components/kokonut/ProfileSetup";
+import { lazy, Suspense, Component, useEffect, useMemo, useRef, useState, type ErrorInfo, type ReactNode } from "react";
 import {
   ClipboardList,
   FileDown,
@@ -35,47 +40,46 @@ import { APP_VERSION } from "./lib/version";
 import { useUpdater } from "./lib/updater";
 import UpdateModal from "./components/UpdateModal";
 import { ThemeProvider, useTheme } from "./lib/theme";
-import { loadSettings } from "./lib/settings";
-import Dashboard from "./pages/Dashboard";
-import Protocol from "./pages/Protocol";
-import Search from "./pages/Search";
-import Screening from "./pages/Screening";
-import Extraction from "./pages/Extraction";
-import Rob from "./pages/Rob";
-import Meta from "./pages/Meta";
-import Prisma from "./pages/Prisma";
-import ManuscriptHelper from "./pages/ManuscriptHelper";
-import Settings from "./pages/Settings";
-import NetworkMeta from "./pages/NetworkMeta";
-import IPDMeta from "./pages/IPDMeta";
-import MultilevelMeta from "./pages/MultilevelMeta";
-import DiagnosticMeta from "./pages/DiagnosticMeta";
-import ProportionsMeta from "./pages/ProportionsMeta";
-import QualitativeMeta from "./pages/QualitativeMeta";
-import ManualMode from "./pages/ManualMode";
-import AdvancedBayesian from "./pages/AdvancedBayesian";
-import AnalysisHub from "./pages/AnalysisHub";
-import Legal from "./pages/Legal";
-import DriveSync from "./pages/DriveSync";
-import Collaboration from "./pages/Collaboration";
+const Dashboard = lazy(() => import("./pages/Dashboard"));
+const Protocol = lazy(() => import("./pages/Protocol"));
+const Search = lazy(() => import("./pages/Search"));
+const Screening = lazy(() => import("./pages/Screening"));
+const Extraction = lazy(() => import("./pages/Extraction"));
+const Rob = lazy(() => import("./pages/Rob"));
+const Meta = lazy(() => import("./pages/Meta"));
+const Prisma = lazy(() => import("./pages/Prisma"));
+const ManuscriptHelper = lazy(() => import("./pages/ManuscriptHelper"));
+const Settings = lazy(() => import("./pages/Settings"));
+const NetworkMeta = lazy(() => import("./pages/NetworkMeta"));
+const IPDMeta = lazy(() => import("./pages/IPDMeta"));
+const MultilevelMeta = lazy(() => import("./pages/MultilevelMeta"));
+const DiagnosticMeta = lazy(() => import("./pages/DiagnosticMeta"));
+const ProportionsMeta = lazy(() => import("./pages/ProportionsMeta"));
+const QualitativeMeta = lazy(() => import("./pages/QualitativeMeta"));
+const ManualMode = lazy(() => import("./pages/ManualMode"));
+const AdvancedBayesian = lazy(() => import("./pages/AdvancedBayesian"));
+const AnalysisHub = lazy(() => import("./pages/AnalysisHub"));
+const Legal = lazy(() => import("./pages/Legal"));
+const DriveSync = lazy(() => import("./pages/DriveSync"));
+const Collaboration = lazy(() => import("./pages/Collaboration"));
+const Interpret = lazy(() => import("./pages/Interpret"));
 import { StudySelector, useStudyManager } from "./components/StudyManager";
 import DisclaimerModal from "./components/DisclaimerModal";
 import NewProjectWizard from "./components/NewProjectWizard";
 import ProfileModal from "./components/ProfileModal";
 import SpecializedAnalysesModal from "./components/SpecializedAnalysesModal";
 import ExportCenterModal from "./components/ExportCenterModal";
-import { AuthProvider, useAuth } from "./context/AuthContext";
 import { CollaborationProvider, useCollaboration } from "./context/CollaborationContext";
 import { ConflictResolverModal } from "./components/ConflictResolverModal";
 
 // v0.5.3 kokonutui component family (adapted, MIT — see file headers)
-import FloatingDock, { type DockItem } from "./components/kokonut/FloatingDock";
+
 import BootScreen from "./components/BootScreen";
 import ProfileSetup, { type ProfileData } from "./components/kokonut/ProfileSetup";
-import ProfileDropdown from "./components/kokonut/ProfileDropdown";
+
 import SwitchButton from "./components/kokonut/SwitchButton";
 import CommandSearch, { type CommandAction } from "./components/kokonut/CommandSearch";
-import OptionsDrawer from "./components/kokonut/OptionsDrawer";
+
 
 const LAST_PATH_KEY = "poolr.lastProjectPath";
 const PROFILE_KEY = "poolr.profile";
@@ -96,6 +100,7 @@ const NAV = [
   { key: "driveSync", label: "Drive Sync", Icon: Cloud },
   { key: "legal", label: "Legal", Icon: Scale },
   { key: "settings", label: "Settings", Icon: Settings2 },
+  { key: "learn", label: "Learn", Icon: FileText },
 ] as const;
 
 type PageKey = (typeof NAV)[number]["key"];
@@ -116,82 +121,8 @@ const TITLES: Record<string, string> = {
   driveSync: "Google Drive Sync & Storage",
   legal: "Legal & Policies",
   settings: "Settings",
+  learn: "Learn meta-analysis & Poolr",
 };
-
-function LogoMark({ size = 20 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-label="poolr">
-      <circle cx="10" cy="9" r="5.2" stroke="var(--color-accent)" strokeWidth="2.4" />
-      <path d="M10 14.2V22" stroke="var(--color-accent)" strokeWidth="2.4" strokeLinecap="round" />
-    </svg>
-  );
-}
-
-/* Animated random floating line field (behind content, z-0).
-   v0.5.3: stroke tint follows the active theme. */
-type Line = { x: number; y: number; depth: number; vx: number; vy: number; pts: { x: number; y: number }[] };
-function useLineField(ref: React.RefObject<HTMLCanvasElement | null>, theme: "light" | "dark") {
-  useEffect(() => {
-    const canvas = ref.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-    let raf = 0; let w = 0; let h = 0;
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
-    let lines: Line[] = [];
-    const isDark = theme === "dark";
-    let seed = 1337;
-    const rand = () => { seed = (seed * 1664525 + 1013904223) % 4294967296; return seed / 4294967296; };
-    const makeCurve = (depth: number) => {
-      const span = Math.max(w, h) * (1.1 + depth * 0.6);
-      const segs = 14 + Math.floor(rand() * 8);
-      const startX = rand() * w, startY = rand() * h;
-      const ang = rand() * Math.PI * 2;
-      let x = startX, y = startY; const dx = Math.cos(ang), dy = Math.sin(ang);
-      const step = span / segs; const pts: { x: number; y: number }[] = [];
-      for (let i = 0; i <= segs; i++) {
-        const wobble = (rand() - 0.5) * 1.1; const a = Math.atan2(dy, dx) + wobble;
-        x += Math.cos(a) * step; y += Math.sin(a) * step; pts.push({ x, y });
-      }
-      return pts;
-    };
-    const build = () => {
-      w = window.innerWidth; h = window.innerHeight;
-      canvas.width = Math.floor(w * dpr); canvas.height = Math.floor(h * dpr);
-      canvas.style.width = w + "px"; canvas.style.height = h + "px";
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      const count = Math.round((w * h) / 5200);
-      lines = Array.from({ length: count }, () => {
-        const depth = Math.pow(rand(), 1.5);
-        return { x: 0, y: 0, depth, vx: (rand() - 0.5) * (0.1 + depth * 0.5), vy: (rand() - 0.5) * (0.1 + depth * 0.5), pts: makeCurve(depth) };
-      });
-    };
-    const drawCurve = (pts: { x: number; y: number }[], ox: number, oy: number) => {
-      ctx!.beginPath(); ctx!.moveTo(pts[0].x + ox, pts[0].y + oy);
-      for (let i = 1; i < pts.length - 1; i++) {
-        const mx = (pts[i].x + pts[i + 1].x) / 2 + ox, my = (pts[i].y + pts[i + 1].y) / 2 + oy;
-        ctx!.quadraticCurveTo(pts[i].x + ox, pts[i].y + oy, mx, my);
-      }
-      const n = pts.length - 1; ctx!.lineTo(pts[n].x + ox, pts[n].y + oy); ctx!.stroke();
-    };
-    const draw = () => {
-      ctx!.clearRect(0, 0, w, h); ctx!.lineCap = "round"; ctx!.lineJoin = "round";
-      for (const l of lines) {
-        l.x += l.vx; l.y += l.vy; const span = Math.max(w, h) * 1.8;
-        if (l.x < -span) l.x = span; if (l.x > span) l.x = -span;
-        if (l.y < -span) l.y = span; if (l.y > span) l.y = -span;
-        const alpha = 0.01 + l.depth * 0.05;
-        ctx!.strokeStyle = isDark
-          ? `rgba(255,255,255,${alpha.toFixed(3)})`
-          : `rgba(15,17,21,${(alpha * 1.15).toFixed(3)})`;
-        ctx!.lineWidth = 0.25 + l.depth * 0.55; drawCurve(l.pts, l.x, l.y);
-      }
-      raf = requestAnimationFrame(draw);
-    };
-    build(); draw(); window.addEventListener("resize", build);
-    return () => { cancelAnimationFrame(raf); window.removeEventListener("resize", build); };
-  }, [ref, theme]);
-}
 
 /** localStorage can throw (private mode / disabled storage) — never let it break boot. */
 const store = {
@@ -246,18 +177,18 @@ class PageBoundary extends Component<{ pageKey: string; children: ReactNode }, {
 export default function App() {
   return (
     <ThemeProvider>
-      <AuthProvider>
+      <DriveProvider>
         <CollaborationProvider>
           <Shell />
         </CollaborationProvider>
-      </AuthProvider>
+      </DriveProvider>
     </ThemeProvider>
   );
 }
 
 function Shell() {
   const { theme, toggleTheme } = useTheme();
-  const { user, isAuthenticated, signIn, signOut } = useAuth();
+  const drive = useDrive();
   const { setActiveSection } = useCollaboration();
   const queryParams = typeof window !== "undefined" ? new URLSearchParams(window.location.search) : null;
   const initialPage = (queryParams?.get("page") as PageKey) || "dashboard";
@@ -273,11 +204,11 @@ function Shell() {
   // v0.5.3 boot experience: splash (greeting) → first-run setup (optional) → app.
   const [splashDone, setSplashDone] = useState(() => queryParams?.get("nosplash") === "1");
   const [profile, setProfile] = useState<StoredProfile | null>(() => readProfile() || (queryParams?.get("demo") === "1" ? { username: "Dr. Haris", avatarId: 1 } : null));
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(() => store.get("poolr.sidebarCollapsed") === "true");
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
   const [specializedOpen, setSpecializedOpen] = useState(() => queryParams?.get("modal") === "specialized");
   const [exportCenterOpen, setExportCenterOpen] = useState(() => queryParams?.get("modal") === "export");
-  const appSettings = loadSettings();
 
   const { updateInfo, downloadUpdate } = useUpdater();
   const [showUpdateModal, setShowUpdateModal] = useState(false);
@@ -306,8 +237,7 @@ function Shell() {
     }
   };
 
-  const linefieldRef = useRef<HTMLCanvasElement | null>(null);
-  useLineField(linefieldRef, theme);
+
 
   // Engine cold-start polling (v0.5.2 behavior kept verbatim).
   useEffect(() => {
@@ -345,9 +275,12 @@ function Shell() {
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const saveSeq = useRef(0);
   const mounted = useRef(true);
-  useEffect(() => () => {
-    mounted.current = false;
-    if (saveTimer.current) clearTimeout(saveTimer.current);
+  useEffect(() => {
+    mounted.current = true;
+    return () => {
+      mounted.current = false;
+      if (saveTimer.current) clearTimeout(saveTimer.current);
+    };
   }, []);
 
   // Ctrl+K opens the command palette.
@@ -377,7 +310,8 @@ function Shell() {
       if (p) {
         cancelPendingSave();
         setProject(normalizeProject(p));
-        setSaveState("saved");
+        setProjectPath(null);
+        setSaveState("idle");
         setBanner(null);
       }
     };
@@ -400,6 +334,9 @@ function Shell() {
   };
 
   const onProjectChange = (p: Project) => {
+    if (drive.binding?.reviewId === p.metadata.id && !drive.canEdit) { setNotice("This team is read-only for your identity."); return; }
+    store.set("poolr.recoveryDraft", JSON.stringify(p));
+    drive.queueReview(p);
     setProject(p);
     if (activeStudyId) {
       updateStudy(activeStudyId, p);
@@ -450,11 +387,13 @@ function Shell() {
     p.metadata.title = config.title;
     p.metadata.studyType = config.studyType;
     p.metadata.config = config;
+    p.meta.settings.measure = config.effectMeasure || "OR";
+    p.protocol.databases = config.databases.join(", ");
     p.pico = { ...p.pico, ...config.pico };
     setProject(p); setSaveState("idle"); setBanner(null);
     const seq = ++saveSeq.current;
     try {
-      const saved = await saveProject("poolr.json", p);
+      const saved = await saveProject(`poolr-${p.metadata.id}.json`, p);
       if (!mounted.current || seq !== saveSeq.current) return;
       setProjectPath(saved); setSaveState("saved");
       store.set(LAST_PATH_KEY, saved);
@@ -471,6 +410,7 @@ function Shell() {
       if (!r.ok) throw new Error(`demo asset missing (HTTP ${r.status})`);
       const raw = await r.json();
       setProject(normalizeProject(raw));
+      setProjectPath(null);
       setSaveState("idle"); setBanner(null);
     } catch (e) {
       console.error(e);
@@ -531,9 +471,11 @@ function Shell() {
     analysisHub: () => <AnalysisHub project={current} onProjectChange={onProjectChange} />,
     manual: () => <ManualMode project={current} onChange={onProjectChange} />,
     legal: () => <Legal />,
-    driveSync: () => <DriveSync />,
-    collaboration: () => <Collaboration />,
+    driveSync: () => <TeamWorkspace project={current} />,
+    collaboration: () => <TeamWorkspace project={current} />,
     manuscript: () => <ManuscriptHelper project={current} onChange={onProjectChange} />,
+    learn: () => <Learn onDemo={() => { void loadDemo(); }} />,
+    interpret: () => <Interpret project={current} onChange={onProjectChange} />,
   };
 
   // Dynamic nav based on study type
@@ -549,19 +491,6 @@ function Shell() {
     manual: NAV,
   };
   const activeNav = advancedNavItems[studyType] || NAV;
-
-  /* Dock navigation — the sidebar's replacement. */
-  const dockItems: DockItem[] = useMemo(
-    () =>
-      activeNav.map((n) => ({
-        title: n.label,
-        key: n.key,
-        icon: <n.Icon className="h-[55%] w-[55%]" />,
-        onSelect: () => setPage(n.key),
-        active: n.key === page,
-      })),
-    [page, activeNav]
-  );
 
   /* Command palette actions (Ctrl+K). */
     const paletteActions: CommandAction[] = useMemo(
@@ -579,7 +508,7 @@ function Shell() {
         { id: "file-demo", label: "Load demo review", description: "BCG dataset", end: "File", icon: <Sparkles className="h-4 w-4" />, onSelect: () => void loadDemo() },
         { id: "file-new", label: "New workspace", end: "File", short: "Ctrl+N", icon: <FilePlus2 className="h-4 w-4" />, onSelect: () => void handleNew() },
         { id: "file-save", label: "Save project", end: "File", short: "Ctrl+S", icon: <Save className="h-4 w-4" />, onSelect: () => void handleSave() },
-        { id: "analysis-hub", label: "Analysis Hub (34 Native Engines)…", description: "Bayesian, Diagnostics, Network, Complex Data, Quality & GRADE", end: "Analysis", icon: <Zap className="h-4 w-4" />, onSelect: () => setPage("analysisHub") },
+        { id: "analysis-hub", label: "Analysis Hub…", description: "Bayesian, Diagnostics, Network, Complex Data, Quality & GRADE", end: "Analysis", icon: <Zap className="h-4 w-4" />, onSelect: () => setPage("analysisHub") },
         { id: "analysis-specialized", label: "Specialized Analyses…", description: "Dose-response, Survival RMST, Economics, Adverse, DCA", end: "Analysis", icon: <Activity className="h-4 w-4" />, onSelect: () => setSpecializedOpen(true) },
         { id: "file-export", label: "Universal Export Center…", description: "DOCX, LaTeX, HTML, R, Stata, Python, BibTeX", end: "File", short: "Ctrl+E", icon: <FileDown className="h-4 w-4" />, onSelect: () => setExportCenterOpen(true) },
         { id: "app-theme", label: theme === "dark" ? "Switch to light theme" : "Switch to dark theme", end: "Appearance", short: "Ctrl+T", icon: theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />, onSelect: toggleTheme },
@@ -597,112 +526,37 @@ function Shell() {
   const showSetup = splashDone && !profile;
 
   return (
-    <div className="relative z-10 flex h-full w-full flex-col overflow-hidden text-[var(--color-text)]">
-      <canvas ref={linefieldRef} className="linefield" aria-hidden="true" />
+    <div className={`workspace-shell ${sidebarCollapsed ? "sidebar-collapsed" : ""} relative z-10 flex h-full w-full flex-col overflow-hidden text-[var(--color-text)]`}>
+      <aside className="workspace-sidebar">
+        <button className="sidebar-toggle" aria-label={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"} aria-expanded={!sidebarCollapsed} onClick={() => { setSidebarCollapsed(!sidebarCollapsed); store.set("poolr.sidebarCollapsed", String(!sidebarCollapsed)); }}>{sidebarCollapsed ? "»" : "«"}</button><div className="workspace-brand"><img className="brand-full brand-light" src="/poolr-brand.png" alt="poolr — Research workspace" /><img className="brand-full brand-dark" src="/poolr-brand-dark.png" alt="poolr — Research workspace" /><img className="brand-mark brand-light" src="/poolr-mark.svg" alt="poolr" /><img className="brand-mark brand-dark" src="/poolr-mark-dark.svg" alt="poolr" /></div>
+        <div className="mb-4"><StudySelector studies={studies} activeStudyId={activeStudyId} onSwitch={handleStudySwitch} onAdd={handleStudyAdd} onRemove={handleStudyRemove} onImport={handleOpen} /></div>
+        <button className="workspace-search" onClick={() => setPaletteOpen(true)}><SearchIcon size={15} /> Find a page or action <kbd>⌘ K</kbd></button>
+        <div className="workspace-nav-label">YOUR REVIEW</div>
+        <nav aria-label="Review workflow">{activeNav.map((n) => <button key={n.key} title={n.label} aria-label={n.label} aria-current={page === n.key ? "page" : undefined} onClick={() => setPage(n.key)}><n.Icon size={17} /><span>{n.label}</span></button>)}</nav>
+        <div className="workspace-sidebar-footer"><span>{drive.activeTeam ? drive.status : ""}</span><br /><span className={connected ? "status-online" : ""}>●</span> {connLabel}<br /><span>{saveLabel}</span></div>
+      </aside>
 
-      {/* ── Header ── */}
-      <header className="glass z-20 flex items-center justify-between border-b px-4 py-2">
-        <div className="flex items-center gap-3">
-          <LogoMark size={22} />
-          <div>
-            <h1 className="text-[16px] font-semibold">{TITLES[page]}</h1>
-            <p className="hidden text-[10.5px] text-[var(--color-text-muted)] sm:block">Systematic review &amp; meta-analysis</p>
-          </div>
-          <div className="hidden lg:block h-5 w-px bg-[var(--color-border)] mx-1" />
-          <div className="hidden lg:block">
-            <StudySelector
-              studies={studies}
-              activeStudyId={activeStudyId}
-              onSwitch={handleStudySwitch}
-              onAdd={handleStudyAdd}
-              onRemove={handleStudyRemove}
-              onImport={handleOpen}
-            />
-          </div>
-        </div>
-
-        <div className="flex items-center gap-1.5">
-                  <button className="btn-ghost flex items-center gap-1.5" disabled={busy} onClick={handleOpen} title="Open project (Ctrl+O)">
-                    <FolderOpen className="h-3.5 w-3.5" /> Open
-                  </button>
-                  <button className="btn-ghost flex items-center gap-1.5" disabled={busy} onClick={loadDemo} title="Load demo review">
-                    <Sparkles className="h-3.5 w-3.5" /> Demo
-                  </button>
-                  <button className="btn-ghost flex items-center gap-1.5" onClick={handleNew} title="New project (Ctrl+N)">
-                    <FilePlus2 className="h-3.5 w-3.5" /> New
-                  </button>
-                  <button className="btn-ghost flex items-center gap-1.5" onClick={() => setSpecializedOpen(true)} title="Specialized Analyses (Dose-Response, Survival, Economics, Adverse, DCA)">
-                    <Activity className="h-3.5 w-3.5" /> Specialized
-                  </button>
-                  <button className="btn-ghost flex items-center gap-1.5" disabled={!project} onClick={handleSave} title="Save project (Ctrl+S)">
-                    <Save className="h-3.5 w-3.5" /> Save
-                  </button>
-                  <button className="btn-primary flex items-center gap-1.5" disabled={!project || busy} onClick={() => setExportCenterOpen(true)} title="Publish & Export Center (Ctrl+E)">
-                    <FileDown className="h-3.5 w-3.5" /> Export
-                  </button>
-                  <SwitchButton size="sm" showLabel={false} className="ml-1 !h-8 !rounded-lg !px-2" />
-                  <button
-                    className="btn-ghost flex items-center gap-1.5"
-                    onClick={() => setPage("settings")}
-                    title="Project settings"
-                  >
-                    <Settings2 className="h-3.5 w-3.5" />
-                  </button>
-                  <div className="ml-1 flex items-center gap-1.5 rounded-lg border border-[var(--color-border)] px-2 py-1" title={`Engine: ${connLabel} | Save: ${saveLabel}`}>
-                    <span className={`h-2 w-2 rounded-full ${connected === null ? 'bg-[var(--color-text-muted)]' : connected ? 'bg-[var(--color-include)]' : 'bg-[var(--color-exclude)]'}`} />
-                    <span className={`h-2 w-2 rounded-full ${saveState === 'error' ? 'bg-[var(--color-exclude)]' : saveState === 'saved' ? 'bg-[var(--color-include)]' : 'bg-[#8b8d96]'}`} />
-                  </div>
-                  {isAuthenticated() ? (
-                    <button
-                      onClick={() => setPage("driveSync")}
-                      className="ml-1 flex items-center gap-1.5 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1 text-[12px] font-medium text-emerald-400 hover:bg-emerald-500/20 transition-all cursor-pointer"
-                      title="Google Drive BYOS connected. Click to manage cloud sync"
-                    >
-                      <Cloud className="h-3.5 w-3.5" />
-                      <span className="max-w-[100px] truncate">{user?.name?.split(" ")[0] || "Drive"}</span>
-                      <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                    </button>
-                  ) : (
-                    <button
-                      onClick={() => void signIn()}
-                      className="ml-1 flex items-center gap-1.5 rounded-lg border border-blue-500/30 bg-blue-500/10 px-2.5 py-1 text-[12px] font-medium text-blue-400 hover:bg-blue-500/20 transition-all cursor-pointer shadow-xs"
-                      title="Sign in with Google to enable Google Drive sync and team collaboration"
-                    >
-                      <svg className="h-3.5 w-3.5" viewBox="0 0 24 24">
-                        <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"/>
-                        <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.33 24 12 24z"/>
-                        <path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.18 0 9.98 0 12s.45 3.82 1.25 5.42l4.03-3.15z"/>
-                        <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/>
-                      </svg>
-                      <span>Sign in with Google</span>
-                    </button>
-                  )}
-                  <ProfileDropdown
-                    appVersion={APP_VERSION}
-                    className="ml-1"
-                    data={{
-                      name: user?.name || profile?.username || "Reviewer",
-                      email: user?.email || "local workspace · your data stays here",
-                      avatarUrl: user?.picture,
-                    }}
-                    isGoogleAuthenticated={isAuthenticated()}
-                    onSignInGoogle={() => void signIn()}
-                    onSignOutGoogle={signOut}
-                    onOpenSettings={() => setPage("settings")}
-                    onOpenProfile={() => setShowProfile(true)}
-                    onOpenLegal={() => setPage("legal")}
-                    onCloseWorkspace={() => {
-                      setProject(null);
-                      setProjectPath(null);
-                      setSaveState("idle");
-                      store.set(LAST_PATH_KEY, "");
-                    }}
-                  />
+      <header className="workspace-header z-20 flex items-center justify-between border-b px-6 py-3">
+        <div><p className="text-[10px] text-[var(--color-text-muted)]">Workspace / {TITLES[page]}</p><h1 className="text-[15px] font-medium mt-1">{current.metadata.title || "Untitled review"}</h1></div>
+        <div className="flex items-center gap-2">
+          <button className="btn-ghost" onClick={() => setPaletteOpen(true)} title="Search commands (Ctrl+K)"><SearchIcon size={16}/></button>
+          <details className="relative"><summary className="btn-ghost cursor-pointer">Project</summary><div className="absolute right-0 top-full z-40 mt-2 w-48 rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] p-2 shadow-lg">
+            <button className="btn-ghost w-full text-left" onClick={handleNew}>New review</button><button className="btn-ghost w-full text-left" onClick={() => { try { const raw = store.get("poolr.recoveryDraft"); if (!raw) { setNotice("No recovery draft is stored."); return; } if (confirm("Open the saved local recovery draft? Export your current review first if it has unsaved changes.")) { cancelPendingSave(); setProject(normalizeProject(JSON.parse(raw))); setProjectPath(null); } } catch { setNotice("The recovery draft could not be read."); } }}>Recover local draft</button>
+            <button className="btn-ghost w-full text-left" disabled={busy} onClick={handleOpen}>Open review</button>
+            <button className="btn-ghost w-full text-left" disabled={busy} onClick={loadDemo}>Load demo</button>
+            <button className="btn-ghost w-full text-left" onClick={() => setShowProfile(true)}>Your profile</button>
+            <button className="btn-ghost w-full text-left" onClick={() => setPage("driveSync")}>Storage & sharing</button>
+          </div></details>
+          <button className="btn-ghost" disabled={!project} onClick={handleSave}>Save</button>
+          <button className="btn-primary flex items-center gap-2" disabled={!project || busy} onClick={() => setExportCenterOpen(true)}><FileDown size={14}/> Export</button>
+          <SwitchButton size="sm" showLabel={false} />
+          <details className="relative"><summary className="flex items-center gap-2 cursor-pointer rounded-md p-1"><span className="overflow-hidden rounded-full w-8 h-8 [&>svg]:w-8 [&>svg]:h-8">{avatars.find(a => a.id === (drive.identity?.avatar || profile?.avatarId))?.svg ?? avatars[0].svg}</span><span className="text-xs">{drive.identity?.name || profile?.username || "Reviewer"}<span className="block text-[10px] text-[var(--color-text-muted)]">{drive.activeTeam?.name || "Choose a team"}</span></span></summary><div className="absolute right-0 top-full z-40 mt-2 w-56 rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] p-2 shadow-lg"><button className="btn-ghost w-full text-left" onClick={() => setShowProfile(true)}>Edit profile</button>
+            <label className="block text-xs p-2">Active team<select className="select w-full mt-1" value={drive.activeTeam?.id || ""} onChange={e => { try { drive.selectTeam(e.target.value); } catch(error) { setNotice(String(error)); } }}><option value="">Personal reviews</option>{drive.teams.map(team => <option value={team.id} key={team.id}>{team.name}{team.ended ? " (ended)" : ""}</option>)}</select></label><button className="btn-ghost w-full text-left" onClick={() => setPage("collaboration")}>Teams & members</button><button className="btn-ghost w-full text-left" onClick={() => setPage("driveSync")}>Connect storage</button><button className="btn-ghost w-full text-left" onClick={() => setPage("settings")}>Settings & updates</button></div></details>
         </div>
       </header>
 
       {/* ── Main ── */}
-      <main className="relative z-10 flex-1 overflow-auto p-4 pb-24">
+      <main className="workspace-main relative z-10 flex-1 overflow-auto">
         {updateInfo?.available && (
           <div className="mb-3 flex items-center gap-2 rounded-[3px] border border-blue-500/30 bg-blue-900/20 px-2.5 py-1.5 text-[12px] text-blue-400">
             <Sparkles size={14} className="shrink-0" />
@@ -717,56 +571,8 @@ function Shell() {
             <button className="shrink-0 text-[var(--color-exclude)]/70 hover:text-[var(--color-exclude)]" onClick={() => setBanner(null)} aria-label="Dismiss">✕</button>
           </div>
         )}
-        <AnimatePresence mode="wait">
-          <motion.div
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -6 }}
-            initial={{ opacity: 0, y: 6 }}
-            key={page}
-            transition={{ duration: 0.18, ease: "easeOut" }}
-          >
-            <PageBoundary pageKey={page}>{pages[page]()}</PageBoundary>
-          </motion.div>
-        </AnimatePresence>
+        <PageBoundary pageKey={page}><Suspense fallback={<p role="status">Loading workspace…</p>}>{(pages[page] ?? pages.dashboard)()}</Suspense></PageBoundary>
       </main>
-
-      {/* ── Floating dock (bottom-center) with status integrated ── */}
-      <div className="pointer-events-none fixed inset-x-0 bottom-3 z-30 flex justify-center">
-        <FloatingDock
-          items={dockItems}
-          className="pointer-events-auto"
-          connected={connected}
-          connLabel={connLabel}
-          saveState={saveState}
-          saveLabel={saveLabel}
-          dockStyle={appSettings.appearance.dockStyle}
-          optionsTrigger={
-            <OptionsDrawer
-              closeText="Close"
-              description="Load sample data, start fresh, or jump straight into analysis. Everything runs locally."
-              icon={Settings2}
-              title="Workspace options"
-              trigger={<button className="btn-ghost flex items-center gap-1.5 rounded-full shadow-lg"><Settings2 className="h-3.5 w-3.5" /> Options</button>}
-            >
-              <div className="space-y-2">
-                <button className="btn-ghost flex w-full items-center gap-2 py-2" onClick={() => { void loadDemo(); }}>
-                  <Sparkles className="h-4 w-4" /> Load bundled demo review
-                </button>
-                <button className="btn-ghost flex w-full items-center gap-2 py-2" onClick={() => { void handleNew(); }}>
-                  <FilePlus2 className="h-4 w-4" /> Start a new workspace
-                </button>
-                <button className="btn-ghost flex w-full items-center gap-2 py-2" onClick={() => { setPage("meta"); }}>
-                  <Sigma className="h-4 w-4" /> Go to Meta-Analysis
-                </button>
-                <div className="mt-3 flex items-center justify-between rounded-xl border border-[var(--card-border)] px-3 py-2">
-                  <span className="text-[12.5px]">Theme</span>
-                  <SwitchButton size="sm" />
-                </div>
-              </div>
-            </OptionsDrawer>
-          }
-        />
-      </div>
 
       {/* ── Command palette (Ctrl+K) ── */}
       <AnimatePresence>

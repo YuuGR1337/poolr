@@ -266,7 +266,7 @@ export default function DatabaseSelector({
                       className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-xl"
                       style={{ backgroundColor: `${db.color}15` }}
                     >
-                      {db.logo}
+                      <img src={new URL(db.url).origin + '/favicon.ico'} alt="" className="h-5 w-5 object-contain" referrerPolicy="no-referrer" onError={e => { e.currentTarget.style.display = 'none'; }} />
                     </div>
 
                     {/* Content */}

@@ -5,7 +5,7 @@ import { loadSettings, saveSettings, type PoolrSettings } from '../lib/settings'
 import { applyThemeClass } from '../lib/theme';
 import { APP_VERSION } from '../lib/version';
 import { useUpdater } from '../lib/updater';
-import GoogleAuthSettings from '../components/GoogleAuthSettings';
+
 
 type Tab = 'ai' | 'cloud' | 'databases' | 'appearance' | 'screening' | 'export' | 'updates';
 
@@ -62,7 +62,7 @@ export default function Settings() {
 
   const [testStatus, setTestStatus] = useState<Record<string, "idle" | "ok" | "fail">>({});
   const [refreshing, setRefreshing] = useState<Record<string, boolean>>({});
-  const { updateInfo, checking, checkForUpdates } = useUpdater();
+  const { updateInfo, checking, error: updateError, checkForUpdates, downloadUpdate } = useUpdater();
 
   const testConnection = async (provider: AIProvider) => {
     setTestStatus(prev => ({ ...prev, [provider.id]: "idle" }));
@@ -234,7 +234,7 @@ export default function Settings() {
       )}
 
       {tab === 'cloud' && (
-        <GoogleAuthSettings />
+        <p className="text-sm text-[var(--color-text-muted)]">Drive access is managed by rclone. Open Team workspace to connect your configured remote and manage your signing identity.</p>
       )}
 
       {tab === 'databases' && (
@@ -356,9 +356,10 @@ export default function Settings() {
             <Button variant="outline" size="sm" onClick={checkForUpdates} disabled={checking}>
               {checking ? 'Checking...' : 'Check for updates now'}
             </Button>
+            {updateError && <p role="alert" className="text-xs">{updateError}</p>}
             {updateInfo?.available && (
               <div className="rounded-lg bg-blue-900/30 border border-blue-500/30 p-3">
-                <p className="text-blue-400 text-[12px]">New version available: {updateInfo.version}</p>
+                <p className="text-blue-400 text-[12px]">New version available: {updateInfo.version}</p><Button onClick={downloadUpdate} disabled={checking}>Download and install signed update</Button>
               </div>
             )}
             {updateInfo && !updateInfo.available && (

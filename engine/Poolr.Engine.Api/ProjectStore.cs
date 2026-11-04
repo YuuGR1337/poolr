@@ -61,7 +61,7 @@ public static class ProjectStore
         var dir = Path.GetDirectoryName(Path.GetFullPath(path)) ?? ".";
         Directory.CreateDirectory(dir);
         var json = JsonSerializer.Serialize(project, Opt);
-        var tmp = path + ".tmp";
+        var tmp = path + "." + Guid.NewGuid().ToString("N") + ".tmp";
         var bak = path + ".bak";
 
         // rolling backup of the previous good file (written BEFORE the temp swap,
@@ -78,11 +78,9 @@ public static class ProjectStore
         {
             File.Move(tmp, path, overwrite: true);
         }
-        catch (IOException)
+        finally
         {
-            // Fallback for filesystems that reject an overwriting move.
-            if (File.Exists(path)) File.Delete(path);
-            File.Move(tmp, path);
+            if (File.Exists(tmp)) File.Delete(tmp);
         }
         return path;
     }

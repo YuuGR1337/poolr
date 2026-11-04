@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [develop, main]
+    branches: [develop, main, "release/**"]
   pull_request:
     branches: [develop, main]
 
@@ -17,7 +17,7 @@ jobs:
     name: C# Format
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v4
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
@@ -29,7 +29,7 @@ jobs:
     name: Frontend (lint · type · build · test)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
@@ -53,10 +53,11 @@ jobs:
     name: C# Engine Tests
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v4
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
+      - run: sudo apt-get update && sudo apt-get install -y rclone
       - name: Run C# engine tests
         run: dotnet test engine/Poolr.Engine.Tests/Poolr.Engine.Tests.csproj -c Release
 
@@ -65,7 +66,7 @@ jobs:
     name: Rust (fmt · clippy)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
         with:
           components: rustfmt, clippy
@@ -88,7 +89,7 @@ jobs:
     name: Security Scan
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v4
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
@@ -110,7 +111,7 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request'
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v4
       - uses: actions/dependency-review-action@v4
         with:
           config-file: '.github/dependency-review.yml'

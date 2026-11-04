@@ -18,7 +18,12 @@ import {
 type Theme = "light" | "dark";
 
 const STORAGE_KEY = "poolr.theme";
-export const DEFAULT_THEME: Theme = "dark";
+function systemTheme(): Theme {
+  if (typeof window === "undefined" || typeof window.matchMedia !== "function") return "dark";
+  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+}
+
+export const DEFAULT_THEME: Theme = systemTheme();
 
 interface ThemeContextValue {
   theme: Theme;

@@ -1,4 +1,6 @@
 // Base API client: postJson, dialogs, file helpers
+import { invoke } from "@tauri-apps/api/core";
+import { open } from "@tauri-apps/plugin-dialog";
 
 export const ENGINE_URL = "http://127.0.0.1:5180";
 
@@ -42,12 +44,20 @@ export async function postJson<T = any>(path: string, body: unknown, timeoutMs =
 }
 
 export async function getProject(path: string): Promise<unknown> {
-  return postJson("/api/project/load", { path });
+  return invoke("collaboration_command", { request: { action: "project.load", path } });
 }
 
-export async function saveProject(path: string, project: unknown): Promise<string> {
-  const r = await postJson<{ saved: string }>("/api/project/save", { path, project });
-  return r.saved;
+const pendingSaves = new Map<string, Promise<string>>();
+export function saveProject(path: string, project: unknown): Promise<string> {
+  const snapshot = JSON.parse(JSON.stringify(project));
+  const previous = pendingSaves.get(path) ?? Promise.resolve(path);
+  const next = previous.catch(() => path).then(async () => {
+    if (!hasTauri) { localStorage.setItem("poolr.recoveryDraft", JSON.stringify(snapshot)); return path; }
+    return invoke<string>("collaboration_command", { request: { action: "project.save", path, project: snapshot } });
+  });
+  pendingSaves.set(path, next);
+  void next.finally(() => { if (pendingSaves.get(path) === next) pendingSaves.delete(path); }).catch(() => {});
+  return next;
 }
 
 export interface DialogResult {
@@ -57,8 +67,7 @@ export interface DialogResult {
 
 export async function openProjectDialog(): Promise<DialogResult> {
   if (hasTauri) {
-    // @ts-ignore
-    const f = await window.__TAURI__.dialog.open({
+    const f = await open({
       filters: [{ name: "poolr project", extensions: ["json"] }],
       multiple: false,
     });

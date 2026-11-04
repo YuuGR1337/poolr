@@ -7,7 +7,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Poolr.Engine.Api;
 
-var oauthTokens = new ConcurrentDictionary<string, (string Token, DateTime Created)>();
+if (args.Contains("--collaboration-command")) { Environment.ExitCode = await CollaborationCommand.Run(); return; }
+
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,7 +22,12 @@ var app = builder.Build();
 // from a different origin (tauri://localhost or localhost:1420). Allow it.
 app.Use(async (ctx, next) =>
 {
-    ctx.Response.Headers.Append("Access-Control-Allow-Origin", "*");
+    var origin = ctx.Request.Headers.Origin.ToString();
+    var allowed = new[] { "http://localhost:1420", "http://127.0.0.1:1420", "tauri://localhost", "http://tauri.localhost", "https://tauri.localhost" };
+    if (origin.Length > 0 && !allowed.Contains(origin)) { ctx.Response.StatusCode = 403; return; }
+    if (origin.Length > 0) ctx.Response.Headers.Append("Access-Control-Allow-Origin", origin);
+    ctx.Response.Headers.Append("Vary", "Origin");
+    if (ctx.Request.Method == "POST" && ctx.Request.ContentType?.StartsWith("application/json", StringComparison.OrdinalIgnoreCase) != true) { ctx.Response.StatusCode = 415; return; }
     ctx.Response.Headers.Append("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
     ctx.Response.Headers.Append("Access-Control-Allow-Headers", "Content-Type");
     if (ctx.Request.Method == "OPTIONS")
@@ -31,119 +38,9 @@ app.Use(async (ctx, next) =>
     await next();
 });
 
-app.MapGet("/health", () => Results.Ok(new { ok = true, version = "0.6.3", engine = "csharp" }));
-app.MapGet("/version", () => Results.Ok(new { version = "0.6.3" }));
+app.MapGet("/health", () => Results.Ok(new { ok = true, version = "0.6.4", engine = "csharp" }));
+app.MapGet("/version", () => Results.Ok(new { version = "0.6.4" }));
 
-// Launch system default browser for OAuth and external documentation
-app.MapPost("/api/auth/open-browser", async (HttpRequest httpReq) =>
-{
-    try
-    {
-        using var reader = new StreamReader(httpReq.Body);
-        var body = await reader.ReadToEndAsync();
-        var json = JsonSerializer.Deserialize<JsonElement>(body);
-        if (json.TryGetProperty("url", out var urlProp))
-        {
-            var url = urlProp.GetString();
-            if (!string.IsNullOrWhiteSpace(url) && (url.StartsWith("http://") || url.StartsWith("https://")))
-            {
-                Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
-                return Results.Ok(new { ok = true });
-            }
-        }
-        return Results.BadRequest(new { error = "Invalid URL" });
-    }
-    catch (Exception ex)
-    {
-        return Results.BadRequest(new { error = ex.Message });
-    }
-});
-
-// Google OAuth callback endpoint (receives user redirect and saves token)
-app.MapGet("/api/auth/google/callback", () =>
-{
-    var html = @"<!DOCTYPE html>
-<html>
-<head>
-    <meta charset='utf-8'>
-    <title>Poolr Authentication</title>
-    <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; background: #09090b; color: #f4f4f5; }
-        .card { background: #18181b; padding: 2.5rem; border-radius: 0.75rem; border: 1px solid #27272a; text-align: center; max-width: 440px; box-shadow: 0 15px 35px rgba(0,0,0,0.5); }
-        h2 { margin: 0 0 0.75rem; font-size: 20px; font-weight: 600; color: #3b82f6; }
-        p { color: #a1a1aa; font-size: 13.5px; line-height: 1.6; margin: 0.5rem 0; }
-        .status { font-weight: 600; font-size: 15px; margin: 1.25rem 0; padding: 0.75rem; border-radius: 6px; }
-        .success { background: rgba(34, 197, 94, 0.1); color: #22c55e; border: 1px solid rgba(34, 197, 94, 0.2); }
-        .error { background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2); }
-    </style>
-</head>
-<body>
-    <div class='card'>
-        <h2>Poolr Authentication</h2>
-        <div id='status' class='status success'>Processing authentication...</div>
-        <p id='message'>Connecting your Google account to Poolr.</p>
-    </div>
-    <script>
-        const hash = window.location.hash.substring(1);
-        const search = window.location.search.substring(1);
-        const params = new URLSearchParams(hash || search);
-        const token = params.get('access_token');
-        const code = params.get('code');
-        const err = params.get('error');
-
-        if (err) {
-            const el = document.getElementById('status');
-            el.className = 'status error';
-            el.textContent = 'Sign-in Failed';
-            document.getElementById('message').textContent = 'Google reported an error: ' + err;
-        } else if (token || code) {
-            fetch('/api/auth/google/store-token', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ token: token || code, type: token ? 'token' : 'code' })
-            }).then(() => {
-                document.getElementById('status').textContent = 'Signed in Successfully!';
-                document.getElementById('message').textContent = 'Your Google session is now active in Poolr. You may close this browser tab.';
-                setTimeout(() => { try { window.close(); } catch(e) {} }, 2500);
-            }).catch(() => {
-                document.getElementById('message').textContent = 'Authentication captured. Please return to the Poolr desktop application.';
-            });
-        } else {
-            document.getElementById('status').className = 'status error';
-            document.getElementById('status').textContent = 'No Credentials Found';
-            document.getElementById('message').textContent = 'No OAuth token or code was provided in the callback redirect.';
-        }
-    </script>
-</body>
-</html>";
-    return Results.Content(html, "text/html");
-});
-
-app.MapPost("/api/auth/google/store-token", async (HttpRequest req) =>
-{
-    using var r = new StreamReader(req.Body);
-    var body = await r.ReadToEndAsync();
-    var json = JsonSerializer.Deserialize<JsonElement>(body);
-    if (json.TryGetProperty("token", out var tProp))
-    {
-        var token = tProp.GetString() ?? "";
-        oauthTokens["latest"] = (token, DateTime.UtcNow);
-        return Results.Ok(new { ok = true });
-    }
-    return Results.BadRequest();
-});
-
-app.MapGet("/api/auth/google/latest-token", () =>
-{
-    if (oauthTokens.TryGetValue("latest", out var item) && (DateTime.UtcNow - item.Created).TotalMinutes < 5)
-    {
-        oauthTokens.TryRemove("latest", out _);
-        return Results.Ok(new { ok = true, token = item.Token });
-    }
-    return Results.Ok(new { ok = false });
-});
-
-// Phase B -- C# meta-analysis engine (numerics covered by engine/Poolr.Engine.Tests xUnit).
 app.MapPost("/api/meta", ([FromBody] MetaRequest req) =>
 {
     try
@@ -276,17 +173,7 @@ app.MapPost("/api/export", async (HttpRequest req, string format = "json") =>
     catch (Exception ex) { return Results.BadRequest(new { error = ex.Message }); }
 });
 
-// Phase B7 -- project persistence (atomic save + .bak, load).
-app.MapPost("/api/project/save", ([FromBody] ProjectSaveRequest req) =>
-{
-    try { var p = ProjectStore.Save(req.path ?? "poolr.json", req.project ?? new()); return Results.Ok(new { saved = p }); }
-    catch (Exception ex) { return Results.BadRequest(new { error = ex.Message }); }
-});
-app.MapPost("/api/project/load", ([FromBody] ProjectLoadRequest req) =>
-{
-    try { return Results.Ok(ProjectStore.Load(req.path ?? "poolr.json")); }
-    catch (Exception ex) { return Results.BadRequest(new { error = ex.Message }); }
-});
+// File access is available only through the native stdio bridge.
 
 // v0.5.1 -- GRADE Summary-of-Findings
 app.MapPost("/api/grade/sof", ([FromBody] SofGenerator.SofRequest req) =>

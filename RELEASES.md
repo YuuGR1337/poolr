@@ -1,3 +1,7 @@
+# v0.6.4 — release candidate
+
+See [release notes](docs/RELEASE_0.6.4.md) and the draft installer builds. Prior releases below are historical.
+
 # poolr Releases
 
 ## Latest Release

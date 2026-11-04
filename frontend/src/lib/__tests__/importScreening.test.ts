@@ -252,4 +252,33 @@ describe("parseCitations / importCitationText", () => {
     const items = citationsToScreeningItems([{ title: "", abstract: "", format: "ris" }]);
     expect(items[0].title).toBe("Untitled record #1");
   });
+
+  it("parses PubMed Summary format with PMID and DOI", () => {
+    const text = "1: Fillingim RB, Loeser JD. Assessment of Chronic Pain. J Pain. 2016. doi: 10.1016/j.jpain.2015.08.010. PMID: 27586827.\n\n2: Hawker GA. Measures of adult pain. Arthritis Care Res. 2011. PMID: 22588748.";
+    const res = importCitationText(text, "summary.txt");
+    expect(res.format).toBe("pubmed_summary");
+    expect(res.records).toBe(2);
+    expect(res.items[0].title).toBe("Assessment of Chronic Pain");
+    expect(res.items[0].pmid).toBe("27586827");
+    expect(res.items[0].doi).toBe("10.1016/j.jpain.2015.08.010");
+  });
+
+  it("parses PubMed Abstract text format with title, abstract, and PMID", () => {
+    const text = "1. J Pain. 2016.\n\nAssessment of Chronic Pain.\n\nFillingim RB.\n\nAuthor information:\nUniv Florida.\n\nAccurate classification of chronic pain conditions.\n\nDOI: 10.1016/j.jpain.2015.08.010\nPMID: 27586827";
+    const res = importCitationText(text, "abstract.txt");
+    expect(res.format).toBe("pubmed_abstract");
+    expect(res.records).toBe(1);
+    expect(res.items[0].title).toBe("Assessment of Chronic Pain");
+    expect(res.items[0].abstract).toContain("Accurate classification");
+    expect(res.items[0].pmid).toBe("27586827");
+  });
+
+  it("parses plain PMID list", () => {
+    const text = "27586827\n22588748\n41136120\n";
+    const res = importCitationText(text, "pmids.txt");
+    expect(res.format).toBe("pmid_list");
+    expect(res.records).toBe(3);
+    expect(res.items[0].pmid).toBe("27586827");
+    expect(res.items[0].title).toBe("PMID 27586827");
+  });
 });

@@ -86,23 +86,23 @@ export function StudySelector({
     <div className="relative">
       <button
         onClick={() => setShowDropdown(!showDropdown)}
-        className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-white/10 bg-[rgba(12,13,17,0.5)] hover:bg-[rgba(12,13,17,0.7)] backdrop-blur-xl transition-colors text-sm"
+        className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text)] hover:bg-[var(--color-surface-2)] transition-colors text-sm"
       >
         <FolderOpen size={14} />
         <span className="max-w-32 truncate">
-          {studies.find(s => s.id === activeStudyId)?.name || "No Study"}
+          {studies.find(s => s.id === activeStudyId)?.name || "Review library"}
         </span>
         <span className="text-xs text-[var(--color-muted-foreground)]">({studies.length})</span>
       </button>
 
       {showDropdown && (
-        <div className="absolute top-full left-0 mt-1 w-64 rounded-lg shadow-xl z-50 text-[var(--color-text)] border border-white/10 bg-[rgba(12,13,17,0.7)] backdrop-blur-xl">
+        <div className="absolute top-full left-0 mt-1 w-64 rounded-lg shadow-xl z-50 text-[var(--color-text)] border border-[var(--color-border)] bg-[var(--color-surface)]">
           <div className="p-2 border-b border-[var(--color-border)]">
             <div className="text-xs text-[var(--color-muted-foreground)] px-2 py-1">Studies</div>
           </div>
           <div className="max-h-64 overflow-y-auto">
             {studies.map(study => (
-              <div key={study.id} className={`flex items-center justify-between px-3 py-2 hover:bg-white/5 cursor-pointer ${study.id === activeStudyId ? "bg-white/10" : ""}`}>
+              <div key={study.id} className={`flex items-center justify-between px-3 py-2 hover:bg-[var(--color-surface-2)] cursor-pointer ${study.id === activeStudyId ? "bg-[var(--color-surface-2)]" : ""}`}>
                 <button onClick={() => { onSwitch(study.id); setShowDropdown(false); }} className="flex-1 text-left text-sm truncate">
                   {study.name}
                 </button>
@@ -113,10 +113,10 @@ export function StudySelector({
             ))}
           </div>
           <div className="p-2 border-t border-[var(--color-border)] space-y-1">
-            <button onClick={() => { onAdd(); setShowDropdown(false); }} className="w-full flex items-center gap-2 px-2 py-1.5 text-xs rounded hover:bg-white/5">
+            <button onClick={() => { onAdd(); setShowDropdown(false); }} className="w-full flex items-center gap-2 px-2 py-1.5 text-xs rounded hover:bg-[var(--color-surface-2)]">
               <Plus size={12} /> New Study
             </button>
-            <button onClick={() => { onImport(); setShowDropdown(false); }} className="w-full flex items-center gap-2 px-2 py-1.5 text-xs rounded hover:bg-white/5">
+            <button onClick={() => { onImport(); setShowDropdown(false); }} className="w-full flex items-center gap-2 px-2 py-1.5 text-xs rounded hover:bg-[var(--color-surface-2)]">
               <FolderOpen size={12} /> Import Project
             </button>
           </div>

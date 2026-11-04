@@ -25,11 +25,14 @@ import {
 import type { Project } from "../lib/project";
 import { draftManuscriptTemplate } from "../lib/manuscript";
 import { useCollaboration } from "../context/CollaborationContext";
-import StepCommentsButton from "../components/StepCommentsDrawer";
+
+import { useDrive } from "../context/DriveContext";
 
 interface SectionMeta {
   assignedTo?: string;
-  status: "draft" | "review" | "approved";
+  reviewer?: string;
+  dueDate?: string;
+  status: "draft" | "review" | "changes_requested" | "approved";
 }
 
 export default function ManuscriptHelper({
@@ -39,74 +42,39 @@ export default function ManuscriptHelper({
   project: Project;
   onChange: (p: Project) => void;
 }) {
-  const { teamMembers, canEditManuscript, recordChange, setActiveSection: setCollabSection } = useCollaboration();
+  const { recordChange, setActiveSection: setCollabSection } = useCollaboration();
+  const drive = useDrive();
+  const team = drive.binding?.reviewId === project.metadata.id ? drive.activeTeam : undefined;
+  const teamMembers = team?.members ?? [];
+  const canAssign = !team || team.ownerKeyId === drive.identity?.keyId;
+  const canEditManuscript = () => !team || drive.canEdit;
 
   const [activeTab, setActiveTab] = useState<
     "title" | "abstract" | "introduction" | "methods" | "results" | "discussion" | "conclusion" | "references"
   >("introduction");
 
   const [editMode, setEditMode] = useState<"edit" | "preview" | "split">("split");
+  const [comment, setComment] = useState("");
   const [copied, setCopied] = useState<string | null>(null);
 
   // Initialize draft from template or existing project manuscript data
   const defaultTemplate = useMemo(() => draftManuscriptTemplate(project, ""), [project]);
 
-  const [sections, setSections] = useState<Record<string, string>>(() => {
-    try {
-      const stored = localStorage.getItem(`poolr.manuscript.${project.metadata.title || "untitled"}`);
-      if (stored) return JSON.parse(stored);
-    } catch {}
-    return defaultTemplate;
-  });
-
-  const [sectionMetas, setSectionMetas] = useState<Record<string, SectionMeta>>(() => {
-    try {
-      const stored = localStorage.getItem(`poolr.manuscript.meta.${project.metadata.title || "untitled"}`);
-      if (stored) return JSON.parse(stored);
-    } catch {}
-    return {
-      title: { status: "draft" },
-      abstract: { status: "draft" },
-      introduction: { status: "draft" },
-      methods: { status: "draft" },
-      results: { status: "draft" },
-      discussion: { status: "draft" },
-      conclusion: { status: "draft" },
-      references: { status: "draft" },
-    };
-  });
-
-  // Keep collaboration active section synced
-  useEffect(() => {
-    setCollabSection("manuscript");
-  }, [setCollabSection]);
-
-  // Persist edits
-  useEffect(() => {
-    try {
-      localStorage.setItem(
-        `poolr.manuscript.${project.metadata.title || "untitled"}`,
-        JSON.stringify(sections)
-      );
-      localStorage.setItem(
-        `poolr.manuscript.meta.${project.metadata.title || "untitled"}`,
-        JSON.stringify(sectionMetas)
-      );
-    } catch {}
-  }, [sections, sectionMetas, project.metadata.title]);
+  const sections: Record<string, string> = project.manuscript?.sections ?? { ...defaultTemplate };
+  const sectionMetas: Record<string, SectionMeta> = project.manuscript?.sectionMetas ?? {};
+  useEffect(() => { setCollabSection("manuscript"); }, [setCollabSection]);
 
   const currentText = sections[activeTab] ?? defaultTemplate[activeTab as keyof typeof defaultTemplate] ?? "";
 
   const updateCurrentText = (newVal: string) => {
-    setSections((prev) => ({ ...prev, [activeTab]: newVal }));
-    recordChange("manuscript", activeTab, currentText.slice(0, 40), newVal.slice(0, 40), `Edited ${activeTab} section`);
+    if (!canEditManuscript()) return;
+    onChange({ ...project, manuscript: { ...project.manuscript, sections: { ...sections, [activeTab]: newVal }, sectionMetas, history: project.manuscript?.history ?? [] } });
+    recordChange("manuscript", activeTab, currentText, newVal, `Edited ${activeTab} section`);
   };
 
   const updateSectionMeta = (tab: string, patch: Partial<SectionMeta>) => {
-    setSectionMetas((prev) => ({
-      ...prev,
-      [tab]: { ...(prev[tab] || { status: "draft" }), ...patch },
-    }));
+    if (!canEditManuscript() || ((patch.assignedTo !== undefined || patch.reviewer !== undefined || patch.dueDate !== undefined) && !canAssign)) return;
+    onChange({ ...project, manuscript: { ...project.manuscript, sections, sectionMetas: { ...sectionMetas, [tab]: { ...(sectionMetas[tab] || { status: "draft" }), ...patch } }, history: project.manuscript?.history ?? [] } });
   };
 
   // ── Formatting Toolbar Helpers ──
@@ -169,16 +137,17 @@ export default function ManuscriptHelper({
     URL.revokeObjectURL(url);
   };
 
+  const escapeHtml = (text: string) => text.replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]!));
   const exportDoc = () => {
     const contentHtml = Object.entries(sections)
       .map(
         ([k, text]) =>
-          `<h2 style="color: #1a1c20; font-family: Calibri, sans-serif; margin-top: 24px;">${k.toUpperCase()}</h2><p style="line-height: 1.6; font-size: 11pt; color: #222;">${text.replace(/\n\n/g, "</p><p>").replace(/\n/g, "<br>")}</p>`
+          `<h2 style="color: #1a1c20; font-family: Calibri, sans-serif; margin-top: 24px;">${k.toUpperCase()}</h2><p style="line-height: 1.6; font-size: 11pt; color: #222;">${escapeHtml(text).replace(/\n\n/g, "</p><p>").replace(/\n/g, "<br>")}</p>`
       )
       .join("\n");
 
-    const html = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>${project.metadata.title || "Manuscript"}</title></head><body style="font-family: Calibri, sans-serif; max-width: 6.5in; margin: 1in auto; color: #111;">
-      <h1 style="font-size: 20pt; text-align: center; margin-bottom: 30px;">${project.metadata.title || "Systematic Review & Meta-Analysis"}</h1>
+    const html = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>${escapeHtml(project.metadata.title || "Manuscript")}</title></head><body style="font-family: Calibri, sans-serif; max-width: 6.5in; margin: 1in auto; color: #111;">
+      <h1 style="font-size: 20pt; text-align: center; margin-bottom: 30px;">${escapeHtml(project.metadata.title || "Systematic Review & Meta-Analysis")}</h1>
       ${contentHtml}
       </body></html>`;
     const blob = new Blob([html], { type: "application/msword;charset=utf-8" });
@@ -207,6 +176,12 @@ export default function ManuscriptHelper({
 
   return (
     <div className="space-y-4">
+      <details className="card p-3"><summary className="cursor-pointer text-sm">Section discussion & saved checkpoints</summary>
+        <div className="space-y-2 mt-3">{(project.manuscript?.comments ?? []).filter(c => c.section === activeTab).map(c => <p key={c.id} className="text-sm whitespace-pre-wrap"><strong>{c.author}</strong> · {new Date(c.timestamp).toLocaleString()}<br/>{c.text}</p>)}
+        <textarea aria-label="Section comment" className="input w-full" value={comment} onChange={e => setComment(e.target.value)} />
+        <button className="btn-ghost" disabled={!comment.trim() || !canEditManuscript()} onClick={() => { onChange({ ...project, manuscript: { ...project.manuscript, sections, sectionMetas, comments: [...(project.manuscript?.comments ?? []), { id: crypto.randomUUID(), section: activeTab, text: comment.trim(), author: drive.identity?.name || "Local reviewer", timestamp: new Date().toISOString() }] } }); setComment(""); }}>Add comment</button>
+        {(project.manuscript?.history ?? []).filter(h => h.section === activeTab).map(h => <div key={h.id} className="text-xs"><span>{new Date(h.timestamp).toLocaleString()}</span><button className="btn-ghost" disabled={!canEditManuscript()} onClick={() => { if (confirm("Restore this checkpoint into the current draft?")) updateCurrentText(h.text); }}>Restore checkpoint</button></div>)}</div>
+      </details>
       {/* Top Banner */}
       <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-2)] p-3">
         <div className="flex items-center gap-2.5 min-w-0">
@@ -216,7 +191,7 @@ export default function ManuscriptHelper({
               Collaborative Manuscript Studio
             </h2>
             <p className="text-[11.5px] text-[var(--color-text-muted)]">
-              Co-author PRISMA 2020 manuscripts in real time with teammate assignments, step-level comments, and multi-format exports.
+              Draft your manuscript with section assignments, review states, comments, and multi-format exports.
             </p>
           </div>
         </div>
@@ -257,22 +232,25 @@ export default function ManuscriptHelper({
             ))}
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             {/* Contributor Assignment */}
             <select
               value={sectionMetas[activeTab]?.assignedTo || ""}
               onChange={(e) => updateSectionMeta(activeTab, { assignedTo: e.target.value })}
               className="h-7 rounded border border-[var(--color-border)] bg-[var(--color-surface)] px-2 text-[11.5px] text-[var(--color-text)]"
               title="Assign section to co-author"
+              disabled={!canAssign}
             >
               <option value="">Unassigned</option>
               {teamMembers.map((m) => (
-                <option key={m.id} value={m.email}>
+                <option key={m.keyId} value={m.keyId}>
                   {m.name} ({m.role})
                 </option>
               ))}
             </select>
 
+            <select aria-label="Section reviewer" className="select" disabled={!canAssign} value={sectionMetas[activeTab]?.reviewer || ""} onChange={e => updateSectionMeta(activeTab, { reviewer: e.target.value })}><option value="">Choose reviewer</option>{teamMembers.map(m => <option key={m.keyId} value={m.keyId}>{m.name}</option>)}</select>
+            <input aria-label="Section due date" type="date" className="input" disabled={!canAssign} value={sectionMetas[activeTab]?.dueDate || ""} onChange={e => updateSectionMeta(activeTab, { dueDate: e.target.value })} />
             {/* Status Selector */}
             <select
               value={sectionMetas[activeTab]?.status || "draft"}
@@ -281,11 +259,11 @@ export default function ManuscriptHelper({
             >
               <option value="draft">Drafting</option>
               <option value="review">In Review</option>
-              <option value="approved">Approved</option>
+              <option value="changes_requested">Changes requested</option><option value="approved">Approved</option>
             </select>
 
             {/* Comments for this section */}
-            <StepCommentsButton step="manuscript" targetId={activeTab} stepTitle={activeTab} />
+            <button className="btn-ghost" disabled={!canEditManuscript()} onClick={() => onChange({ ...project, manuscript: { ...project.manuscript, sections, sectionMetas, history: [...(project.manuscript?.history ?? []), { id: crypto.randomUUID(), section: activeTab, text: currentText, timestamp: new Date().toISOString() }] } })}>Save section checkpoint</button>
           </div>
         </div>
 
