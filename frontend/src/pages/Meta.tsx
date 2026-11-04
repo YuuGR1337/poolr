@@ -264,6 +264,35 @@ export default function Meta({ project, onChange }: { project: Project; onChange
     }
   }, [studies.length, resp, busy]);
 
+  useEffect(() => {
+    if (resp && !forest) {
+      try {
+        const isRatio = ["OR", "RR", "HR"].includes(settings.measure || "OR");
+        const plotData = {
+          studies: resp.studies.map((s) => ({
+            study: s.study,
+            effect: s.effect,
+            ci_lower: s.ci_lower,
+            ci_upper: s.ci_upper,
+            weight: (s.weight || 0) <= 1 ? (s.weight || 0) * 100 : s.weight,
+            subgroup: s.subgroup || "",
+            se: Math.abs(s.ci_upper - s.ci_lower) / (2 * 1.959964),
+          })),
+          pooled: {
+            effect: resp.pooled.effect,
+            ci_lower: resp.pooled.ci_lower,
+            ci_upper: resp.pooled.ci_upper,
+            se: resp.pooled.se,
+          },
+        };
+        setForest(generateForestSVG(generateForestPlotData(plotData as any), isRatio));
+        setFunnel(generateFunnelSVG(generateFunnelPlotData(plotData as any)));
+      } catch (e) {
+        console.warn("Initial plot generation failed:", e);
+      }
+    }
+  }, [resp, forest, settings.measure]);
+
   // Fetch specialized diagnostic SVG when user switches figure tab
   const studiesRef = useRef(studies);
   if (studies !== studiesRef.current) studiesRef.current = studies;

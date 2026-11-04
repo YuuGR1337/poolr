@@ -7,22 +7,23 @@ const repoRoot = path.resolve(__dirname, '..');
 const screenshotsDir = path.join(repoRoot, 'docs', 'screenshots');
 
 async function main() {
-  console.log('Launching browser...');
+  console.log('Launching browser for targeted screenshot refresh...');
   const browser = await puppeteer.launch({
     executablePath: '/usr/bin/google-chrome-stable',
     headless: true,
     args: ['--no-sandbox', '--disable-gpu', '--disable-dev-shm-usage', '--window-size=1920,1080'],
-    defaultViewport: { width: 1920, height: 1080 }
+    defaultViewport: { width: 1920, height: 1080, deviceScaleFactor: 1 }
   });
 
   const page = await browser.newPage();
   const baseUrl = 'http://127.0.0.1:8089';
 
   const targets = [
+    { page: 'dashboard', file: 'dashboard.png', wait: 2000 },
     { page: 'screening&tab=conflicts', file: 'screening-conflicts.png', wait: 2000 },
-    { page: 'meta', file: 'meta-forest.png', wait: 2500 },
-    { page: 'meta&fig=funnel', file: 'meta-funnel.png', wait: 2500 },
-    { page: 'meta&fig=galbraith', file: 'meta-diagnostics.png', wait: 2500 },
+    { page: 'meta&fig=forest', file: 'meta-forest.png', wait: 2500 },
+    { page: 'meta&fig=funnel_contour', file: 'meta-funnel.png', wait: 3000 },
+    { page: 'meta&fig=galbraith', file: 'meta-diagnostics.png', wait: 3000 },
   ];
 
   for (const t of targets) {

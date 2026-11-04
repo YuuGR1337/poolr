@@ -1,5 +1,9 @@
 {
-  "metadata": { "version": "0.6.3", "created": "2026-09-03T12:00:00Z", "title": "BCG vaccine for tuberculosis (demo)" },
+  "metadata": {
+    "version": "0.6.3",
+    "created": "2026-09-03T12:00:00Z",
+    "title": "BCG vaccine for tuberculosis (demo)"
+  },
   "pico": {
     "population": "People at risk of tuberculosis (all ages)",
     "intervention": "BCG vaccination",
@@ -8,42 +12,418 @@
   },
   "protocol": {
     "databases": "PubMed, Embase, Cochrane CENTRAL",
-    "registration": "Demo — not registered (PROSPERO ID or 'Not registered')",
+    "registration": "Demo \u2014 not registered (PROSPERO ID or 'Not registered')",
     "objective": "Estimate the protective effect of BCG vaccination against tuberculosis."
   },
   "screening": {
     "title_abstract": [
-      { "id": "demo1", "title": "Aronson 1948 — Protective effect of BCG in American Indians", "abstract": "20-year follow-up of BCG vaccination.", "decision": "include", "stage": "title_abstract" },
-      { "id": "demo2", "title": "Ferguson & Simes 1949 — BCG vaccination of Indian children", "abstract": "Controlled trial, Saskatchewan.", "decision": "include", "stage": "title_abstract" },
-      { "id": "demo3", "title": "Rosenthal 1960 — BCG vaccination against tuberculin converters", "abstract": "Chicago trial.", "decision": "include", "stage": "title_abstract" },
-      { "id": "demo4", "title": "Editorial: The value of BCG — a review", "abstract": "Narrative review, excluded as not primary research.", "decision": "exclude", "stage": "title_abstract", "exclusion_reason": "Review / meta-analysis (not primary)" }
+      {
+        "id": "demo1",
+        "title": "Aronson 1948 \u2014 Protective effect of BCG in American Indians",
+        "abstract": "Long-term evaluation of BCG vaccine in preventing tuberculosis among North American Indians and Alaskan natives.",
+        "decision": "include",
+        "stage": "title_abstract",
+        "reviewerDecisions": [
+          {
+            "reviewerId": "rev-1",
+            "reviewerName": "Dr. Haris (Lead)",
+            "decision": "include",
+            "note": "Meets all PICO criteria; prospective randomized design.",
+            "timestamp": "2026-11-04T09:30:00Z"
+          },
+          {
+            "reviewerId": "rev-2",
+            "reviewerName": "Reviewer 2 (Biostat)",
+            "decision": "include",
+            "note": "Clear control group with verified primary endpoints.",
+            "timestamp": "2026-11-04T09:45:00Z"
+          }
+        ]
+      },
+      {
+        "id": "demo2",
+        "title": "Ferguson & Simes 1949 \u2014 BCG vaccination of Indian children in Saskatchewan",
+        "abstract": "Controlled trial of BCG vaccination against tuberculosis in newborn infants.",
+        "decision": "include",
+        "stage": "title_abstract",
+        "reviewerDecisions": [
+          {
+            "reviewerId": "rev-1",
+            "reviewerName": "Dr. Haris (Lead)",
+            "decision": "include",
+            "note": "Pediatric RCT, full 12-year morbidity tracking.",
+            "timestamp": "2026-11-04T10:00:00Z"
+          },
+          {
+            "reviewerId": "rev-2",
+            "reviewerName": "Reviewer 2 (Biostat)",
+            "decision": "include",
+            "note": "Eligible prospective trial with verifiable event counts.",
+            "timestamp": "2026-11-04T10:10:00Z"
+          }
+        ]
+      },
+      {
+        "id": "demo3",
+        "title": "Rosenthal et al 1960 \u2014 BCG vaccination against tuberculosis in Chicago",
+        "abstract": "A 20-year study of BCG vaccination in a high-risk metropolitan population.",
+        "decision": "include",
+        "stage": "title_abstract",
+        "reviewerDecisions": [
+          {
+            "reviewerId": "rev-1",
+            "reviewerName": "Dr. Haris (Lead)",
+            "decision": "include",
+            "note": "Eligible study population, BCG vs placebo.",
+            "timestamp": "2026-11-04T10:30:00Z"
+          },
+          {
+            "reviewerId": "rev-2",
+            "reviewerName": "Reviewer 2 (Biostat)",
+            "decision": "include",
+            "note": "Includes both active and control incidence numbers.",
+            "timestamp": "2026-11-04T10:40:00Z"
+          }
+        ]
+      },
+      {
+        "id": "demo4",
+        "title": "Editorial: The clinical role of BCG vaccination in modern tuberculosis control",
+        "abstract": "Perspectives and expert opinion regarding the variable protective efficacy of BCG vaccination across tropical vs temperate geographic regions.",
+        "decision": "unset",
+        "stage": "title_abstract",
+        "reviewerDecisions": [
+          {
+            "reviewerId": "rev-1",
+            "reviewerName": "Dr. Haris (Lead)",
+            "decision": "include",
+            "note": "Contains comparative summary statistics across historical cohorts.",
+            "timestamp": "2026-11-04T11:00:00Z"
+          },
+          {
+            "reviewerId": "rev-2",
+            "reviewerName": "Reviewer 2 (Biostat)",
+            "decision": "exclude",
+            "exclusion_reason": "Wrong study design (narrative review/editorial)",
+            "note": "Review article / opinion piece without primary raw patient data.",
+            "timestamp": "2026-11-04T11:15:00Z"
+          }
+        ]
+      },
+      {
+        "id": "demo5",
+        "title": "Smith & Peters 1955 \u2014 Retrospective chart audit of BCG recipients",
+        "abstract": "Hospital audit of medical records for 420 patients receiving BCG without a concurrent unvaccinated control cohort.",
+        "decision": "exclude",
+        "stage": "title_abstract",
+        "reviewerDecisions": [
+          {
+            "reviewerId": "rev-1",
+            "reviewerName": "Dr. Haris (Lead)",
+            "decision": "exclude",
+            "exclusion_reason": "Wrong study design (uncontrolled cohort)",
+            "note": "No concurrent comparator arm.",
+            "timestamp": "2026-11-04T11:20:00Z"
+          },
+          {
+            "reviewerId": "rev-2",
+            "reviewerName": "Reviewer 2 (Biostat)",
+            "decision": "exclude",
+            "exclusion_reason": "Wrong study design (uncontrolled cohort)",
+            "note": "Observational case series without concurrent controls.",
+            "timestamp": "2026-11-04T11:25:00Z"
+          }
+        ]
+      }
     ],
     "full_text": []
   },
   "extraction": {
     "studies": [
-      { "study": "Aronson 1948", "type": "binary", "int_events": 4, "int_n": 123, "ctrl_events": 11, "ctrl_n": 139, "year": 1948 },
-      { "study": "Ferguson & Simes 1949", "type": "binary", "int_events": 6, "int_n": 306, "ctrl_events": 29, "ctrl_n": 303, "year": 1949 },
-      { "study": "Rosenthal et al 1960", "type": "binary", "int_events": 3, "int_n": 231, "ctrl_events": 11, "ctrl_n": 220, "year": 1960 },
-      { "study": "Hart & Sutherland 1977", "type": "binary", "int_events": 62, "int_n": 13598, "ctrl_events": 248, "ctrl_n": 12867, "year": 1977 },
-      { "study": "Frimodt-Moller 1973", "type": "binary", "int_events": 33, "int_n": 5069, "ctrl_events": 47, "ctrl_n": 5808, "year": 1973 },
-      { "study": "Stein & Aronson 1953", "type": "binary", "int_events": 180, "int_n": 1541, "ctrl_events": 372, "ctrl_n": 1451, "year": 1953 }
+      {
+        "study": "Aronson 1948",
+        "type": "binary",
+        "int_events": 4,
+        "int_n": 123,
+        "ctrl_events": 11,
+        "ctrl_n": 139,
+        "year": 1948
+      },
+      {
+        "study": "Ferguson & Simes 1949",
+        "type": "binary",
+        "int_events": 6,
+        "int_n": 306,
+        "ctrl_events": 29,
+        "ctrl_n": 303,
+        "year": 1949
+      },
+      {
+        "study": "Rosenthal et al 1960",
+        "type": "binary",
+        "int_events": 3,
+        "int_n": 231,
+        "ctrl_events": 11,
+        "ctrl_n": 220,
+        "year": 1960
+      },
+      {
+        "study": "Hart & Sutherland 1977",
+        "type": "binary",
+        "int_events": 62,
+        "int_n": 13598,
+        "ctrl_events": 248,
+        "ctrl_n": 12867,
+        "year": 1977
+      },
+      {
+        "study": "Frimodt-Moller 1973",
+        "type": "binary",
+        "int_events": 33,
+        "int_n": 5069,
+        "ctrl_events": 47,
+        "ctrl_n": 5808,
+        "year": 1973
+      },
+      {
+        "study": "Stein & Aronson 1953",
+        "type": "binary",
+        "int_events": 180,
+        "int_n": 1541,
+        "ctrl_events": 372,
+        "ctrl_n": 1451,
+        "year": 1953
+      }
     ]
   },
   "rob": {
     "assessments": [
-      { "id": "r1", "study": "Aronson 1948", "tool": "RoB2", "overall": "Some concerns", "domains": { "Randomization": "Low", "Deviations from intended": "Low", "Missing outcome": "Some concerns", "Measurement of outcome": "Low", "Selection of reported result": "Low" } },
-      { "id": "r2", "study": "Hart & Sutherland 1977", "tool": "RoB2", "overall": "Low", "domains": { "Randomization": "Low", "Deviations from intended": "Low", "Missing outcome": "Low", "Measurement of outcome": "Low", "Selection of reported result": "Low" } }
+      {
+        "id": "r1",
+        "study": "Aronson 1948",
+        "tool": "RoB2",
+        "overall": "Some concerns",
+        "domains": {
+          "Randomization": "Low",
+          "Deviations from intended": "Low",
+          "Missing outcome": "Some concerns",
+          "Measurement of outcome": "Low",
+          "Selection of reported result": "Low"
+        }
+      },
+      {
+        "id": "r2",
+        "study": "Hart & Sutherland 1977",
+        "tool": "RoB2",
+        "overall": "Low",
+        "domains": {
+          "Randomization": "Low",
+          "Deviations from intended": "Low",
+          "Missing outcome": "Low",
+          "Measurement of outcome": "Low",
+          "Selection of reported result": "Low"
+        }
+      }
     ]
   },
   "meta": {
-    "results": null,
-    "settings": { "model": "random", "measure": "OR", "method": "DL", "subgroup": "none", "pub_bias": "none", "knapp_hartung": true, "sensitivity": true, "bias_depth": "egger", "data": [] }
+    "settings": {
+      "measure": "OR",
+      "model": "random",
+      "method": "DL",
+      "knapp_hartung": false,
+      "bias_depth": "egger"
+    },
+    "results": {
+      "model": "random",
+      "measure": "OR",
+      "method": "DL",
+      "k": 6,
+      "studies": [
+        {
+          "study": "Aronson 1948",
+          "effect": 0.4207749681644533,
+          "ci_lower": 0.13757666153906223,
+          "ci_upper": 1.2869302965570677,
+          "weight": 0.09351979720686857,
+          "subgroup": "",
+          "int_events": 4,
+          "int_n": 123,
+          "ctrl_events": 11,
+          "ctrl_n": 139
+        },
+        {
+          "study": "Ferguson & Simes 1949",
+          "effect": 0.20127471163879412,
+          "ci_lower": 0.08475851639103249,
+          "ci_upper": 0.47796388221780933,
+          "weight": 0.12640635459947747,
+          "subgroup": "",
+          "int_events": 6,
+          "int_n": 306,
+          "ctrl_events": 29,
+          "ctrl_n": 303
+        },
+        {
+          "study": "Rosenthal et al 1960",
+          "effect": 0.2790410046617829,
+          "ci_lower": 0.08311832704832291,
+          "ci_upper": 0.936783559628059,
+          "weight": 0.08406097327087954,
+          "subgroup": "",
+          "int_events": 3,
+          "int_n": 231,
+          "ctrl_events": 11,
+          "ctrl_n": 220
+        },
+        {
+          "study": "Hart & Sutherland 1977",
+          "effect": 0.23447113441926634,
+          "ci_lower": 0.17749209856057713,
+          "ci_upper": 0.309741748064883,
+          "weight": 0.2384625426740718,
+          "subgroup": "",
+          "int_events": 62,
+          "int_n": 13598,
+          "ctrl_events": 248,
+          "ctrl_n": 12867
+        },
+        {
+          "study": "Frimodt-Moller 1973",
+          "effect": 0.8067852048467242,
+          "ci_lower": 0.5176200101685093,
+          "ci_upper": 1.257490734463051,
+          "weight": 0.20593554132758723,
+          "subgroup": "",
+          "int_events": 33,
+          "int_n": 5069,
+          "ctrl_events": 47,
+          "ctrl_n": 5808
+        },
+        {
+          "study": "Stein & Aronson 1953",
+          "effect": 0.3841987346171194,
+          "ci_lower": 0.3161725756771153,
+          "ci_upper": 0.46686107220171436,
+          "weight": 0.2516147909211154,
+          "subgroup": "",
+          "int_events": 180,
+          "int_n": 1541,
+          "ctrl_events": 372,
+          "ctrl_n": 1451
+        }
+      ],
+      "pooled": {
+        "effect": 0.35999316309739926,
+        "ci_lower": 0.23542616797899577,
+        "ci_upper": 0.550470147772328,
+        "se": 0.21668137289577089,
+        "z": -4.715081067904633,
+        "p": 2.4189935343699176e-06,
+        "ci_method": "DerSimonian-Laird",
+        "model": "random"
+      },
+      "heterogeneity": {
+        "q": 24.195612493126777,
+        "df": 5,
+        "q_p": 0.00019910311109250234,
+        "i2": 79.33509638815572,
+        "i2_lower": 62.36838483422383,
+        "i2_upper": 96.3018079420876,
+        "tau2": 0.17671243361705993,
+        "tau": 0.4203717802339495,
+        "h2": 4.839122498625356
+      },
+      "publication_bias": {
+        "egger_intercept": -1.24,
+        "egger_p": 0.18,
+        "begg_p": 0.23,
+        "trim_fill_added": 0
+      },
+      "sensitivity": {
+        "leave_one_out": [
+          {
+            "excluded": "Aronson 1948",
+            "effect": 0.35,
+            "ci_lower": 0.22,
+            "ci_upper": 0.56,
+            "i2": 82.1,
+            "k": 5,
+            "p": 0.0001
+          },
+          {
+            "excluded": "Ferguson & Simes 1949",
+            "effect": 0.4,
+            "ci_lower": 0.26,
+            "ci_upper": 0.61,
+            "i2": 74.2,
+            "k": 5,
+            "p": 0.0001
+          },
+          {
+            "excluded": "Rosenthal et al 1960",
+            "effect": 0.37,
+            "ci_lower": 0.23,
+            "ci_upper": 0.59,
+            "i2": 81.0,
+            "k": 5,
+            "p": 0.0001
+          },
+          {
+            "excluded": "Hart & Sutherland 1977",
+            "effect": 0.38,
+            "ci_lower": 0.23,
+            "ci_upper": 0.63,
+            "i2": 80.5,
+            "k": 5,
+            "p": 0.0001
+          },
+          {
+            "excluded": "Frimodt-Moller 1973",
+            "effect": 0.31,
+            "ci_lower": 0.2,
+            "ci_upper": 0.49,
+            "i2": 71.8,
+            "k": 5,
+            "p": 0.0001
+          },
+          {
+            "excluded": "Stein & Aronson 1953",
+            "effect": 0.33,
+            "ci_lower": 0.2,
+            "ci_upper": 0.54,
+            "i2": 75.3,
+            "k": 5,
+            "p": 0.0001
+          }
+        ],
+        "cumulative": [],
+        "fixed_vs_random": null,
+        "influence_max_change_pct": 11.2,
+        "most_influential": "Frimodt-Moller 1973"
+      }
+    }
   },
   "prisma": {
-    "flow": { "identified": 13, "duplicates": 0, "screened": 13, "excludedTa": 1, "fullText": 6, "excludedFt": 0, "included": 6 },
+    "flow": {
+      "identified": 13,
+      "duplicates": 0,
+      "screened": 13,
+      "excludedTa": 1,
+      "fullText": 6,
+      "excludedFt": 0,
+      "included": 6
+    },
     "grade": [],
     "checklist": {}
   },
-  "search": { "databases": [ { "name": "PubMed", "query": "(BCG OR \"bacillus Calmette-Guerin\") AND tuberculosis AND vaccine*", "results": 13 } ] }
+  "search": {
+    "databases": [
+      {
+        "name": "PubMed",
+        "query": "(BCG OR \"bacillus Calmette-Guerin\") AND tuberculosis AND vaccine*",
+        "results": 13
+      }
+    ]
+  }
 }

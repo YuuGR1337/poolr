@@ -4,8 +4,7 @@
 
 <p align="center">
   <a href="https://poolr.mehvar.store">
-    <img src="docs/poolr-brand-dark.png#gh-dark-mode-only" alt="Poolr Logo" width="340">
-    <img src="docs/poolr-brand.png#gh-light-mode-only" alt="Poolr Logo" width="340">
+    <img src="docs/poolr-brand-dark.png" alt="Poolr Logo" width="280">
   </a>
 </p>
 
