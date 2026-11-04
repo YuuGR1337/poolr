@@ -2,10 +2,12 @@
 
 <div align="center">
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="frontend/public/poolr-brand-dark.png">
-  <img src="frontend/public/poolr-brand.png" alt="Poolr Logo" width="340">
-</picture>
+<p align="center">
+  <a href="https://poolr.mehvar.store">
+    <img src="docs/poolr-brand-dark.png#gh-dark-mode-only" alt="Poolr Logo" width="340">
+    <img src="docs/poolr-brand.png#gh-light-mode-only" alt="Poolr Logo" width="340">
+  </a>
+</p>
 
 ### *From search to forest plot.*
 
@@ -55,27 +57,27 @@
 
 | **Dashboard** — Stage Milestones, PICO Overview & Team Activity | **Meta-Analysis** — Forest Plot, Pooled Diamond & 95% Prediction Interval |
 |:---:|:---:|
-| ![Dashboard](docs/screenshots/dashboard.png) | ![Meta-Analysis](docs/screenshots/meta-forest.png) |
+| ![Dashboard](docs/screenshots/dashboard.png?v=0.6.5) | ![Meta-Analysis](docs/screenshots/meta-forest.png?v=0.6.5) |
 
 | **Screening** — Multi-Format PubMed Import & Reactive Filters | **Dual Screening** — Cohen's $\kappa$ Agreement & Conflict Dashboard |
 |:---:|:---:|
-| ![Screening](docs/screenshots/screening.png) | ![Screening & Conflicts](docs/screenshots/screening-conflicts.png) |
+| ![Screening](docs/screenshots/screening.png?v=0.6.5) | ![Screening & Conflicts](docs/screenshots/screening-conflicts.png?v=0.6.5) |
 
 | **Cochrane robvis** — Vector Traffic Light & Weighted Summary Plots | **PRISMA 2020** — Interactive Flow & Reporting Checklists |
 |:---:|:---:|
-| ![Risk of Bias](docs/screenshots/rob-robvis.png) | ![PRISMA 2020 Flow](docs/screenshots/prisma-flow.png) |
+| ![Risk of Bias](docs/screenshots/rob-robvis.png?v=0.6.5) | ![PRISMA 2020 Flow](docs/screenshots/prisma-flow.png?v=0.6.5) |
 
 | **Interactive Figure Studio** — Publication Bias Funnel Plot | **Diagnostic Accuracy** — SROC, Galbraith Radial & Baujat Diagnostics |
 |:---:|:---:|
-| ![Funnel Plot](docs/screenshots/meta-funnel.png) | ![Figure Studio Diagnostics](docs/screenshots/meta-diagnostics.png) |
+| ![Funnel Plot](docs/screenshots/meta-funnel.png?v=0.6.5) | ![Figure Studio Diagnostics](docs/screenshots/meta-diagnostics.png?v=0.6.5) |
 
 | **Specialized Analyses Hub** — Dose-Response, Survival RMST & Bayesian | **Manuscript Helper** — Section Assignments & Checkpoints |
 |:---:|:---:|
-| ![Specialized Analyses](docs/screenshots/specialized-hub.png) | ![Manuscript Workspace](docs/screenshots/manuscript.png) |
+| ![Specialized Analyses](docs/screenshots/specialized-hub.png?v=0.6.5) | ![Manuscript Workspace](docs/screenshots/manuscript.png?v=0.6.5) |
 
 | **Team Collaboration** — Drive-Based Sync & Cryptographic Signing | **Universal Export Center** — Word, LaTeX, HTML, R, Stata, Python |
 |:---:|:---:|
-| ![Team Collaboration](docs/screenshots/collaboration.png) | ![Universal Export Center](docs/screenshots/export-center.png) |
+| ![Team Collaboration](docs/screenshots/collaboration.png?v=0.6.5) | ![Universal Export Center](docs/screenshots/export-center.png?v=0.6.5) |
 
 ---
 
