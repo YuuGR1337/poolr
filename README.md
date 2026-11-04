@@ -1,6 +1,13 @@
-# poolr
+# Poolr
 
 <div align="center">
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="frontend/public/poolr-brand-dark.png">
+  <img src="frontend/public/poolr-brand.png" alt="Poolr Logo" width="340">
+</picture>
+
+### *From search to forest plot.*
 
 [![Release](https://img.shields.io/github/v/release/harisawan-bit/poolr?color=007ACC&label=release)](https://github.com/harisawan-bit/poolr/releases)
 [![CI](https://github.com/harisawan-bit/poolr/actions/workflows/ci.yml/badge.svg)](https://github.com/harisawan-bit/poolr/actions/workflows/ci.yml)
@@ -17,99 +24,125 @@
 
 *From PICO protocol definition to publication-ready PRISMA 2020 manuscripts, vector diagnostics, and reproducible statistical scripts.*
 
-[Download Installers](#direct-downloads) • [Features](#features) • [Screenshots](#screenshots) • [Architecture](#architecture) • [How to Cite](#how-to-cite-poolr) • [Releases](RELEASES.md)
+[Download Installers (poolr.mehvar.store)](https://poolr.mehvar.store) • [Direct Downloads](#direct-downloads) • [Features](#key-features-by-srma-phase) • [Screenshots](#screenshots) • [Architecture](#architecture) • [How to Cite](#how-to-cite-poolr) • [Releases](https://github.com/harisawan-bit/poolr/releases)
 
 </div>
 
 ---
 
-> **Current release — v0.6.3.** Commercial Systematic Reviews & Meta-Analysis Platform with Team Collaboration. Built for clinicians, epidemiologists, biostatisticians, and research teams. Features Google Identity Sign-In, Bring-Your-Own-Storage (BYOS) Google Drive sync with structured directory hierarchies, 4-tier Role-Based Access Control (Owner, Editor, Reviewer, Viewer), visual 3-way conflict resolution, inline review step discussions, ICMJE/CRediT-compliant active-time authorship tracking, zero-warning .NET 8 / C# 12 statistical engine with gold-standard parity tests, vector Cochrane *robvis* Traffic Light & Summary Bar plots, Interactive Figure Studio (Contour-Enhanced Funnel, Galbraith, L'Abbé, Baujat), Higgins 95% Prediction Intervals, Trial Sequential Analysis (TSA), Model Averaging across 6 $\tau^2$ estimators, Specialized Analyses Hub (Dose-Response, Survival RMST, Health Economics, Adverse Events, DCA), Dual Screening with Cohen's Kappa $\kappa$, PRISMA 2020 auto-synced Sankey flow, and 1-click manuscript export to Word (.docx), LaTeX (.tex), Standalone HTML, R metafor (.R), Stata (.do), Python (.py), BibTeX, and RIS. 100% offline-first, native desktop build, and 100% Python-free.
+> **Current release — v0.6.5.** Commercial Systematic Reviews & Meta-Analysis Platform with Team Collaboration. Built for clinicians, epidemiologists, biostatisticians, and research teams. Features native multi-format PubMed & citation imports, reactive dual screening with Cohen's Kappa ($\kappa$), continuous study sample size tracking (`Int. n` / `Ctrl n`), Bring-Your-Own-Storage (BYOS) Google Drive sync with cryptographic Ed25519 signatures, 4-tier Role-Based Access Control, visual 3-way conflict resolution, zero-warning .NET 8 / C# 12 statistical engine with gold-standard parity tests, vector Cochrane *robvis* Traffic Light & Summary Bar plots, Interactive Figure Studio (Contour-Enhanced Funnel, Galbraith, L'Abbé, Baujat), Higgins 95% Prediction Intervals, Trial Sequential Analysis (TSA), Model Averaging across 6 $\tau^2$ estimators, AI-powered plain-language statistical interpretation, Specialized Analyses Hub (Dose-Response, Survival RMST, Health Economics, Adverse Events, DCA), PRISMA 2020 auto-synced flow diagrams, and 1-click manuscript export to Word (.docx), LaTeX (.tex), Standalone HTML, R metafor (.R), Stata (.do), Python (.py), BibTeX, and RIS. 100% offline-first, native desktop build, and 100% Python-free.
 
 ---
 
 ## Table of Contents
 
 1. [Screenshots & Visual Tour](#screenshots)
-2. [Direct Downloads (v0.6.3)](#direct-downloads)
-3. [Key Features by SRMA Phase](#features)
-4. [Interactive Figure Studio & Visualizations](#interactive-figure-studio)
-5. [Specialized Analyses Suite](#specialized-analyses-suite)
-6. [Universal Manuscript & Script Export Center](#universal-export-center)
-7. [How Poolr Compares](#how-poolr-compares)
-8. [Architecture & Technology Stack](#architecture)
-9. [How to Cite Poolr](#how-to-cite-poolr)
-10. [Local Development & Testing](#local-development)
-11. [Community & Contributing](#contributing)
+2. [Direct Downloads (v0.6.5)](#direct-downloads)
+3. [What's New in v0.6.5](#whats-new-in-v065)
+4. [Key Features by SRMA Phase](#key-features-by-srma-phase)
+5. [Interactive Figure Studio & Visualizations](#interactive-figure-studio)
+6. [Specialized Analyses Suite](#specialized-analyses-suite)
+7. [Universal Manuscript & Script Export Center](#universal-export-center)
+8. [How Poolr Compares](#how-poolr-compares)
+9. [Architecture & Technology Stack](#architecture)
+10. [How to Cite Poolr](#how-to-cite-poolr)
+11. [Local Development & Testing](#local-development)
+12. [Community & Contributing](#contributing)
 
 ---
 
 ## Screenshots
 
-| **Dashboard** — Screening Rings, Heterogeneity Gauge & PICO Overview | **Meta-Analysis** — Forest Plot, Pooled Diamond & 95% Prediction Interval |
+| **Dashboard** — Stage Milestones, PICO Overview & Team Activity | **Meta-Analysis** — Forest Plot, Pooled Diamond & 95% Prediction Interval |
 |:---:|:---:|
 | ![Dashboard](docs/screenshots/dashboard.png) | ![Meta-Analysis](docs/screenshots/meta-forest.png) |
 
-| **Cochrane robvis** — Vector Traffic Light & Summary Bar Plots | **PRISMA 2020** — Interactive Sankey Flow & 27-Item Checklist Tracker |
+| **Screening** — Multi-Format PubMed Import & Reactive Filters | **Dual Screening** — Cohen's $\kappa$ Agreement & Conflict Dashboard |
+|:---:|:---:|
+| ![Screening](docs/screenshots/screening.png) | ![Screening & Conflicts](docs/screenshots/screening-conflicts.png) |
+
+| **Cochrane robvis** — Vector Traffic Light & Weighted Summary Plots | **PRISMA 2020** — Interactive Flow & Reporting Checklists |
 |:---:|:---:|
 | ![Risk of Bias](docs/screenshots/rob-robvis.png) | ![PRISMA 2020 Flow](docs/screenshots/prisma-flow.png) |
 
-| **Interactive Figure Studio** — Contour-Enhanced Funnel Plot | **Dual Screening** — Cohen's $\kappa$ Agreement & Conflict Dashboard |
+| **Interactive Figure Studio** — Publication Bias Funnel Plot | **Diagnostic Accuracy** — SROC, Galbraith Radial & Baujat Diagnostics |
 |:---:|:---:|
-| ![Figure Studio Diagnostics](docs/screenshots/meta-diagnostics.png) | ![Screening & Conflicts](docs/screenshots/screening-conflicts.png) |
+| ![Funnel Plot](docs/screenshots/meta-funnel.png) | ![Figure Studio Diagnostics](docs/screenshots/meta-diagnostics.png) |
 
-| **Specialized Analyses Hub** — Dose-Response, Survival RMST & DCA | **Universal Export Center** — Word, LaTeX, HTML, R, Stata, Python |
+| **Specialized Analyses Hub** — Dose-Response, Survival RMST & Bayesian | **Manuscript Helper** — Section Assignments & Checkpoints |
 |:---:|:---:|
-| ![Specialized Analyses](docs/screenshots/specialized-hub.png) | ![Universal Export Center](docs/screenshots/export-center.png) |
+| ![Specialized Analyses](docs/screenshots/specialized-hub.png) | ![Manuscript Workspace](docs/screenshots/manuscript.png) |
+
+| **Team Collaboration** — Drive-Based Sync & Cryptographic Signing | **Universal Export Center** — Word, LaTeX, HTML, R, Stata, Python |
+|:---:|:---:|
+| ![Team Collaboration](docs/screenshots/collaboration.png) | ![Universal Export Center](docs/screenshots/export-center.png) |
 
 ---
 
 ## Direct Downloads
 
-Poolr runs natively on Windows, macOS, and Linux without requiring Python, R, Docker, or runtime configuration.
+Official releases are hosted at [poolr.mehvar.store](https://poolr.mehvar.store) and on [GitHub Releases](https://github.com/harisawan-bit/poolr/releases/tag/v0.6.5). Poolr runs natively on Windows, macOS, and Linux without requiring Python, R, Docker, or external runtimes.
 
-| Operating System | Architecture | Installer Package | Direct Download (v0.6.3) |
+| Operating System | Architecture | Package Format | Direct Download (v0.6.5) |
 |---|---|---|---|
-| **Windows** | x64 (Standard Intel/AMD) | `.msi` (Enterprise) / `.exe` (NSIS) | [poolr_0.6.3_x64_en-US.msi](https://github.com/harisawan-bit/poolr/releases/download/v0.6.3/poolr_0.6.3_x64_en-US.msi) · [poolr_0.6.3_x64-setup.exe](https://github.com/harisawan-bit/poolr/releases/download/v0.6.3/poolr_0.6.3_x64-setup.exe) |
-| **Windows** | ARM64 (Surface / Copilot+ PC) | `.msi` / `.exe` | [poolr_0.6.3_arm64_en-US.msi](https://github.com/harisawan-bit/poolr/releases/download/v0.6.3/poolr_0.6.3_arm64_en-US.msi) · [poolr_0.6.3_arm64-setup.exe](https://github.com/harisawan-bit/poolr/releases/download/v0.6.3/poolr_0.6.3_arm64-setup.exe) |
-| **Windows** | x86 (32-bit Legacy) | `.msi` / `.exe` | [poolr_0.6.3_x86_en-US.msi](https://github.com/harisawan-bit/poolr/releases/download/v0.6.3/poolr_0.6.3_x86_en-US.msi) · [poolr_0.6.3_x86-setup.exe](https://github.com/harisawan-bit/poolr/releases/download/v0.6.3/poolr_0.6.3_x86-setup.exe) |
-| **macOS** | Apple Silicon (M1/M2/M3/M4) | `.dmg` | [poolr_0.6.3_aarch64.dmg](https://github.com/harisawan-bit/poolr/releases/download/v0.6.3/poolr_0.6.3_aarch64.dmg) |
-| **macOS** | Intel x64 | `.dmg` | [poolr_0.6.3_x64.dmg](https://github.com/harisawan-bit/poolr/releases/download/v0.6.3/poolr_0.6.3_x64.dmg) |
-| **Linux** | x86_64 (Debian / Ubuntu / Mint) | `.deb` | [poolr_0.6.3_amd64.deb](https://github.com/harisawan-bit/poolr/releases/download/v0.6.3/poolr_0.6.3_amd64.deb) |
-| **Linux** | x86_64 (Fedora / RHEL / openSUSE)| `.rpm` | [poolr-0.6.3-1.x86_64.rpm](https://github.com/harisawan-bit/poolr/releases/download/v0.6.3/poolr-0.6.3-1.x86_64.rpm) |
+| **Windows** | x64 (Standard Intel/AMD) | `.msi` (Enterprise) / `.exe` (NSIS) | [poolr_0.6.5_x64_en-US.msi](https://github.com/harisawan-bit/poolr/releases/download/v0.6.5/poolr_0.6.5_x64_en-US.msi) · [poolr_0.6.5_x64-setup.exe](https://github.com/harisawan-bit/poolr/releases/download/v0.6.5/poolr_0.6.5_x64-setup.exe) |
+| **Windows** | ARM64 (Surface / Copilot+ PC) | `.msi` / `.exe` | [poolr_0.6.5_arm64_en-US.msi](https://github.com/harisawan-bit/poolr/releases/download/v0.6.5/poolr_0.6.5_arm64_en-US.msi) · [poolr_0.6.5_arm64-setup.exe](https://github.com/harisawan-bit/poolr/releases/download/v0.6.5/poolr_0.6.5_arm64-setup.exe) |
+| **Windows** | x86 (32-bit Legacy) | `.msi` / `.exe` | [poolr_0.6.5_x86_en-US.msi](https://github.com/harisawan-bit/poolr/releases/download/v0.6.5/poolr_0.6.5_x86_en-US.msi) · [poolr_0.6.5_x86-setup.exe](https://github.com/harisawan-bit/poolr/releases/download/v0.6.5/poolr_0.6.5_x86-setup.exe) |
+| **macOS** | Apple Silicon (M1/M2/M3/M4) | `.dmg` | [poolr_0.6.5_aarch64.dmg](https://github.com/harisawan-bit/poolr/releases/download/v0.6.5/poolr_0.6.5_aarch64.dmg) |
+| **macOS** | Intel x64 | `.dmg` | [poolr_0.6.5_x64.dmg](https://github.com/harisawan-bit/poolr/releases/download/v0.6.5/poolr_0.6.5_x64.dmg) |
+| **Linux** | x86_64 (Debian / Ubuntu / Mint) | `.deb` | [poolr_0.6.5_amd64.deb](https://github.com/harisawan-bit/poolr/releases/download/v0.6.5/poolr_0.6.5_amd64.deb) |
+| **Linux** | x86_64 (Portable AppImage) | `.AppImage` | [poolr_0.6.5_amd64.AppImage](https://github.com/harisawan-bit/poolr/releases/download/v0.6.5/poolr_0.6.5_amd64.AppImage) |
+| **Linux** | x86_64 (Fedora / RHEL / openSUSE)| `.rpm` | [poolr-0.6.5-1.x86_64.rpm](https://github.com/harisawan-bit/poolr/releases/download/v0.6.5/poolr-0.6.5-1.x86_64.rpm) |
+
+*All binaries include cryptographic `.sig` signatures verified by the built-in Tauri updater.*
 
 ---
 
-## Features
+## What's New in v0.6.5
+
+- **Multi-Format PubMed Importer**: Native parser supporting PubMed Summary (`1: ...`), Abstract (`1. ...`), PMID lists (`^\d{6,10}$`), MEDLINE (`PMID- ...`), RIS, and CSV exports with automated PMID/DOI metadata extraction and duplicate elimination.
+- **Reactive Title & Abstract Screening**: Instantly reactive record badges, real-time status filtering (Unscreened, Included, Excluded, Uncertain), and dual-reviewer conflict detection without state lag.
+- **Continuous Study Data Extraction**: Dedicated sample size tracking (`Int. n`, `Ctrl n`) alongside Mean and SD for accurate Inverse-Variance continuous meta-analyses.
+- **Unblocked Risk of Bias (RoB) Workflows**: Evaluate studies across RoB 2, ROBINS-I, and QUADAS-2 domains with live traffic-light and weighted summary visualizations.
+- **AI-Powered Statistical Interpretation**: Route and model safety for the `Interpret` workspace, providing plain-language synthesis of complex statistical estimates and heterogeneity.
+- **Data Persistence Continuity**: Extended mode preservation (`metadata.studyType`, network, IPD, multilevel, diagnostic, qualitative, manuscript) across project reopen and save cycles.
+- **Drive-Based Crypt Collaboration**: Peer-to-peer sync over Google Drive with cryptographic identity verification, client-side encryption support, and zero third-party cloud lock-in.
+- **Verified Cross-Platform Binaries**: Signed native builds for Linux (`.AppImage`, `.deb`, `.rpm`), macOS (Apple Silicon & Intel), and Windows (`x64`, `x86`, `arm64`) with persistent updater signatures.
+
+---
+
+## Key Features by SRMA Phase
 
 ### 1. Protocol & PICO Formulation
 - Structured input for **Population**, **Intervention**, **Comparator**, and **Outcomes**.
 - Protocol tracking: PROSPERO registration ID, publication date boundaries, inclusion criteria, and language restrictions.
-- All state auto-persisted to standard, human-readable `poolr.json` files.
+- Live protocol discovery links for PubMed, PROSPERO, and Google Scholar.
+- All state auto-persisted to standard, human-readable `poolr.json` project files.
 
-### 2. Multi-Database Search Builder
+### 2. Multi-Database Search & Citation Import
+- Multi-format citation parsing for PubMed Summary, PubMed Abstract, PMID lists, MEDLINE/nbib, RIS, EndNote, and CSV files.
 - Automated search query generator converting PICO parameters into optimized boolean expressions for:
-  - **PubMed / MEDLINE** (with MeSH expansion)
-  - **Embase**
-  - **Cochrane CENTRAL**
-  - **Scopus**
-  - **Web of Science**
-- Real-time API retrieval from **NCBI Entrez E-utilities**, **OpenAlex**, **Crossref**, and **ClinicalTrials.gov**.
-- 1-click copy and export of documented search strategies for manuscript methodology appendices.
+  - PubMed / MEDLINE (with MeSH expansion)
+  - Embase
+  - Cochrane CENTRAL
+  - Scopus
+  - Web of Science
+- Real-time API retrieval from NCBI Entrez E-utilities, OpenAlex, Crossref, and ClinicalTrials.gov.
+- Automated deduplication using exact title matching, normalized Levenshtein similarity, and PMID/DOI resolution.
 
 ### 3. Dual Screening & Inter-Rater Reliability
-- Independent **Title & Abstract** and **Full-Text** screening stages.
-- Multi-reviewer configuration (1 to 4 independent reviewers).
-- **Conflict Resolution UI**: Automated $2 \times 2$ contingency table calculating:
+- Independent Title & Abstract and Full-Text screening stages.
+- Multi-reviewer configuration (1 to 4 independent reviewers) with blind voting.
+- Conflict Resolution UI: Automated 2×2 contingency table calculating:
   - Observed percent agreement ($P_o$)
-  - **Cohen's Kappa ($\kappa$)** and Standard Error
-  - $95\%$ Confidence Intervals
-  - **Landis & Koch qualitative strength classification** (Slight, Fair, Moderate, Substantial, Almost Perfect)
-  - 1-click **Copy Methods Statement** button for copy-pasting into manuscript methodology.
+  - Cohen's Kappa ($\kappa$) and Standard Error
+  - 95% Confidence Intervals
+  - Landis & Koch qualitative strength classification (*Slight, Fair, Moderate, Substantial, Almost Perfect*)
+- 1-click **Copy Methods Statement** button for copy-pasting into manuscript methodology.
 - **Promote Included (N)**: 1-click progression of title/abstract includes directly to full-text screening.
-- **Priority Screening**: Machine-learning ranking of unreviewed citations against PICO criteria.
 
 ### 4. Structured Data Extraction
-- Multi-type study extraction: Binary, Continuous (Mean $\pm$ SD, Sample size), Time-to-Event (HR, Log[HR], SE), Proportions, and Diagnostic Accuracy.
+- Multi-type study extraction: Binary (2×2), Continuous (Mean ± SD, Sample sizes $n_1, n_2$), Time-to-Event (HR, Log[HR], SE), Proportions, and Diagnostic Accuracy.
 - **Import from Screening**: 1-click populator creating study records directly from screened inclusions.
 - Flexible CSV/TSV table importer with automated column header detection and mapping.
 - Automatic missing summary completion: Wan et al. (2014) median and IQR to mean and SD converter.
@@ -124,10 +157,10 @@ Poolr runs natively on Windows, macOS, and Linux without requiring Python, R, Do
 - Publication-grade vector graphics complying with McGuinness & Higgins (2021) *robvis*:
   - **Traffic Light Plots**: Domain-by-study colored circle matrices.
   - **Weighted Summary Bar Plots**: Proportion of studies / sample weights at Low, Some Concerns, High, or Critical risk of bias.
-  - 1-click Scalable Vector Graphics (`.svg`) vector download.
+- 1-click Scalable Vector Graphics (`.svg`) vector download.
 
 ### 6. Classical & Advanced Meta-Analysis Engine
-- **Effect Measures**: Odds Ratio (OR), Risk Ratio (RR), Risk Difference (RD), Mean Difference (MD), Standardized Mean Difference (SMD / Hedges' $g$), Hazard Ratio (HR), Single-Arm Proportions (Freeman-Tukey double arcsine), Correlation ($z$), and Generic Inverse-Variance.
+- **Effect Measures**: Odds Ratio (OR), Risk Ratio (RR), Risk Difference (RD), Mean Difference (MD), Standardized Mean Difference (SMD / Hedges' g), Hazard Ratio (HR), Single-Arm Proportions (Freeman-Tukey double arcsine), Correlation (z), and Generic Inverse-Variance.
 - **Statistical Pooling Models**: Fixed-Effect (Inverse Variance, Mantel-Haenszel, Peto) and Random-Effects.
 - **Between-Study Variance ($\tau^2$) Estimators**:
   - DerSimonian-Laird (DL)
@@ -136,11 +169,11 @@ Poolr runs natively on Windows, macOS, and Linux without requiring Python, R, Do
   - Empirical Bayes (EB)
   - Hunter-Schmidt (HS)
   - Sidik-Jonkman (SJ)
-- **Small-Sample Adjustment**: Knapp-Hartung-Sidik-Jonkman (KHSJ) $t$-distribution adjustments.
-- **Heterogeneity Evaluation**: Cochran's $Q$, $I^2$ (with Jackson 95% CI), $\tau^2$, $H^2$.
-- **Higgins 95% Prediction Interval**: $PI = \hat{\theta} \pm t_{k-2} \sqrt{SE^2 + \tau^2}$ predicting the treatment effect in a future clinical trial.
+- **Small-Sample Adjustment**: Knapp-Hartung-Sidik-Jonkman (KHSJ) t-distribution adjustments.
+- **Heterogeneity Evaluation**: Cochran's Q, $I^2$ (with Jackson 95% CI), $\tau^2$, $H^2$.
+- **Higgins 95% Prediction Interval**: $\text{PI} = \hat{\theta} \pm t_{k-2}\sqrt{\text{SE}^2 + \tau^2}$ predicting the treatment effect in a future clinical trial.
 - **Sensitivity Analyses**: Leave-one-out influence analysis ranking, cumulative meta-analysis, and fixed vs. random discordance diagnostics.
-- **Publication Bias & Small-Study Diagnostics**: Egger's regression test, Begg's rank test, Duval & Tweedie trim-and-fill, PET/PEESE meta-regression, $p$-curve analysis, and 3-parameter selection models (3PSM).
+- **Publication Bias & Small-Study Diagnostics**: Egger's regression test, Begg's rank test, Duval & Tweedie trim-and-fill, PET/PEESE meta-regression, p-curve analysis, and 3-parameter selection models (3PSM).
 
 ---
 
@@ -148,12 +181,12 @@ Poolr runs natively on Windows, macOS, and Linux without requiring Python, R, Do
 
 Poolr features an integrated vector graphics studio that renders publication-ready charts in real time with 1-click SVG download:
 
-1. **Forest Plots**: Proportional study weight markers, individual confidence intervals, pooled diamond summary, reference lines ($1.0$ for ratios, $0.0$ for differences), and study weight percentages.
-2. **Standard Funnel Plots**: Pseudo-95% confidence intervals centered on the pooled estimate.
-3. **Contour-Enhanced Funnel Plots**: Overlays $p < 0.10, p < 0.05, p < 0.01$ statistical significance zones (Peters et al. 2008) to assist in differentiating publication bias from other causes of funnel plot asymmetry.
-4. **Galbraith Radial Plots**: Standardized effect size $z$-scores plotted against precision ($1/SE$) for instant graphical outlier identification outside the $\pm 2$ error corridor.
-5. **L'Abbé Plots**: Plots experimental event rates vs. control event rates to inspect treatment homogeneity across study baselines.
-6. **Baujat Heterogeneity Diagnostics**: Compares each study's contribution to overall Cochran's $Q$ against its influence on the pooled effect size.
+- **Forest Plots**: Proportional study weight markers, individual confidence intervals, pooled diamond summary, reference lines (1.0 for ratios, 0.0 for differences), and study weight percentages.
+- **Standard Funnel Plots**: Pseudo-95% confidence intervals centered on the pooled estimate.
+- **Contour-Enhanced Funnel Plots**: Overlays $p<0.10, p<0.05, p<0.01$ statistical significance zones (Peters et al. 2008) to assist in differentiating publication bias from other causes of funnel plot asymmetry.
+- **Galbraith Radial Plots**: Standardized effect size z-scores plotted against precision (1/SE) for instant graphical outlier identification outside the $\pm 2$ error corridor.
+- **L'Abbé Plots**: Plots experimental event rates vs. control event rates to inspect treatment homogeneity across study baselines.
+- **Baujat Heterogeneity Diagnostics**: Compares each study's contribution to overall Cochran's Q against its influence on the pooled effect size.
 
 ---
 
@@ -166,7 +199,7 @@ Accessible from the top header or via Command Palette (`Ctrl+K`):
 - **Health Economics Evaluation**: Bivariate cost-effectiveness pooling, Incremental Cost-Effectiveness Ratio (ICER), and Incremental Net Monetary Benefit (INMB) across willingness-to-pay thresholds $\lambda$ (`/api/specialized/economic`).
 - **Adverse Events & Peto Odds Ratios**: Peto one-step pooling with zero-event continuity corrections and Number Needed to Harm (NNH) (`/api/specialized/adverse`).
 - **Decision Curve Analysis (DCA)**: Net Benefit curves evaluated across clinical decision threshold probabilities $p_t$ (`/api/advanced/dca`).
-- **Trial Sequential Analysis (TSA)**: Calculates Required Information Size (RIS) based on $\alpha=0.05, \beta=0.20$ and tracks cumulative $Z$-curve crossing against Lan-DeMets O'Brien-Fleming monitoring boundaries.
+- **Trial Sequential Analysis (TSA)**: Calculates Required Information Size (RIS) based on $\alpha=0.05, \beta=0.20$ and tracks cumulative Z-curve crossing against Lan-DeMets O'Brien-Fleming monitoring boundaries.
 - **Multimodel Inference (Model Averaging)**: Computes AICc-weighted pooled estimates across 6 $\tau^2$ estimators to eliminate single-estimator selection bias.
 
 ---
@@ -177,45 +210,45 @@ Generate complete manuscript files and replication packages with one click (`Ctr
 
 | Format | Output Type | Description |
 |---|---|---|
-| **Word (`.docx`)** | PRISMA 2020 Manuscript | Formatted Word document containing Title, Structured Abstract, PICO, Search Strategy, Screening Flow, Extraction Table, Meta-Analysis summary, and GRADE SoF table. |
-| **LaTeX (`.tex`)** | Academic Article | Publication-grade LaTeX template with `booktabs`, `amsmath`, and PGF/TikZ figure wrappers. |
-| **HTML (`.html`)** | Standalone Interactive Report | Self-contained HTML report with embedded CSS, interactive vector charts, and offline tables. |
-| **R Script (`.R`)** | `metafor` Replication Code | Executable R script recreating the exact analysis, forest plot, and funnel plot using `metafor::rma()`. |
-| **Stata (`.do`)** | Stata Meta Script | Executable Stata do-file using official `meta esize` and `meta forestplot` syntax. |
-| **Python (`.py`)** | `statsmodels` Replication Code | Python script using `pandas` and `statsmodels` for reproducible independent recalculation. |
-| **BibTeX (`.bib`)** | Citation Bibliography | Formatted BibTeX bibliography of all included studies. |
-| **RIS (`.ris`)** | Reference Manager Archive | Standard RIS file compatible with EndNote, Zotero, Mendeley, and Rayyan. |
+| **Word (.docx)** | PRISMA 2020 Manuscript | Formatted Word document containing Title, Structured Abstract, PICO, Search Strategy, Screening Flow, Extraction Table, Meta-Analysis summary, and GRADE SoF table. |
+| **LaTeX (.tex)** | Academic Article | Publication-grade LaTeX template with `booktabs`, `amsmath`, and PGF/TikZ figure wrappers. |
+| **HTML (.html)** | Standalone Interactive Report | Self-contained HTML report with embedded CSS, interactive vector charts, and offline tables. |
+| **R Script (.R)** | `metafor` Replication Code | Executable R script recreating the exact analysis, forest plot, and funnel plot using `metafor::rma()`. |
+| **Stata (.do)** | Stata Meta Script | Executable Stata do-file using official `meta esize` and `meta forestplot` syntax. |
+| **Python (.py)** | `statsmodels` Replication Code | Python script using `pandas` and `statsmodels` for reproducible independent recalculation. |
+| **BibTeX (.bib)** | Citation Bibliography | Formatted BibTeX bibliography of all included studies. |
+| **RIS (.ris)** | Reference Manager Archive | Standard RIS file compatible with EndNote, Zotero, Mendeley, and Rayyan. |
 
 ---
 
 ## How Poolr Compares
 
-| Feature | **Poolr** | Cochrane RevMan | R (`metafor`) | JASP | Covidence / Rayyan |
-|---|:---:|:---:|:---:|:---:|:---:|
+| Feature | Poolr | Cochrane RevMan | R (metafor) | JASP | Covidence / Rayyan |
+|---|---|---|---|---|---|
 | **Price** | **100% Free & Open-Source** | Free (Web only) / Subscription | Free & Open-Source | Free & Open-Source | Commercial / Freemium |
 | **Installation** | **Standalone Native Desktop** | Web browser | CLI / IDE required | Native Desktop | Web browser |
-| **No-Code Interface** | :white_check_mark: | :white_check_mark: | :x: | :white_check_mark: | :white_check_mark: |
-| **Data Privacy (100% Local)** | :white_check_mark: | :x: (Cloud-stored) | :white_check_mark: | :white_check_mark: | :x: (Cloud-stored) |
-| **Full PRISMA 2020 Pipeline** | :white_check_mark: (All 8 stages) | Partial (No search/screening) | :x: (Analysis only) | :x: (Analysis only) | Screening only |
-| **Dual Screening + Cohen's $\kappa$** | :white_check_mark: | :x: | :x: | :x: | :white_check_mark: |
-| **Cochrane robvis Vector Figures** | :white_check_mark: | :x: (Separate tool) | Via `robvis` package | :x: | :x: |
-| **Figure Studio (Contour/Galbraith/Baujat)**| :white_check_mark: | :x: | Via scripts | Partial | :x: |
-| **Trial Sequential Analysis (TSA)** | :white_check_mark: | :x: | Via `tsa` package | :x: | :x: |
-| **Dose-Response / Survival RMST / DCA** | :white_check_mark: | :x: | Via complex scripts | :x: | :x: |
-| **1-Click Word / LaTeX Manuscript Export** | :white_check_mark: | :x: | :x: | :x: | :x: |
-| **1-Click R & Stata Replication Script** | :white_check_mark: | :x: | Self | :x: | :x: |
-| **Python Dependency Free** | :white_check_mark: (100% Python-free) | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| **No-Code Interface** | **✅** | ✅ | ❌ | ✅ | ✅ |
+| **Data Privacy (100% Local)** | **✅** | ❌ (Cloud-stored) | ✅ | ✅ | ❌ (Cloud-stored) |
+| **Full PRISMA 2020 Pipeline** | **✅ (All 8 stages)** | Partial (No search/screening) | ❌ (Analysis only) | ❌ (Analysis only) | Screening only |
+| **Dual Screening + Cohen's $\kappa$** | **✅** | ❌ | ❌ | ❌ | ✅ |
+| **Cochrane robvis Vector Figures** | **✅** | ❌ (Separate tool) | Via robvis package | ❌ | ❌ |
+| **Figure Studio (Contour/Galbraith/Baujat)** | **✅** | ❌ | Via scripts | Partial | ❌ |
+| **Trial Sequential Analysis (TSA)** | **✅** | ❌ | Via tsa package | ❌ | ❌ |
+| **Dose-Response / Survival RMST / DCA** | **✅** | ❌ | Via complex scripts | ❌ | ❌ |
+| **1-Click Word / LaTeX Manuscript Export** | **✅** | ❌ | ❌ | ❌ | ❌ |
+| **1-Click R & Stata Replication Script** | **✅** | ❌ | Self | ❌ | ❌ |
+| **Python Dependency Free** | **✅ (100% Python-free)** | ✅ | ✅ | ✅ | ✅ |
 
 ---
 
-## Architecture
+## Architecture & Technology Stack
 
 Poolr is designed as a modular, multi-tier native desktop application with decoupled UI and statistical computation layers:
 
 ```
 ┌────────────────────────────────────────────────────────────────────────┐
-│                        Tauri 2 Native Desktop Shell                    │
-│                 (Rust / Windows WebView2, WebKitGTK, WKWebView)        │
+│                   Tauri 2 Native Desktop Shell                         │
+│           (Rust / Windows WebView2, WebKitGTK, WKWebView)              │
 └────────────────────────────────────┬───────────────────────────────────┘
                                      │
                  ┌───────────────────┴───────────────────┐
@@ -244,14 +277,14 @@ For in-depth technical documentation regarding inter-process communication, zero
 If you use Poolr to conduct, screen, analyze, or report evidence in your systematic review or meta-analysis, please cite the software:
 
 ### APA Format
-> Awan, M. H. (2026). *Poolr: Desktop platform for systematic reviews & meta-analyses* (Version 0.6.0) [Computer software]. https://github.com/harisawan-bit/poolr
+> Awan, M. H. (2026). *Poolr: Desktop platform for systematic reviews & meta-analyses* (Version 0.6.5) [Computer software]. https://github.com/harisawan-bit/poolr
 
 ### BibTeX
 ```bibtex
 @software{Awan_Poolr_2026,
   author = {Awan, Muhammad Haris},
   title = {{Poolr: Desktop Platform for Systematic Reviews & Meta-Analyses}},
-  version = {0.6.3},
+  version = {0.6.5},
   year = {2026},
   url = {https://github.com/harisawan-bit/poolr},
   publisher = {GitHub}
@@ -262,13 +295,13 @@ Standardized machine-readable citation metadata is maintained in [CITATION.cff](
 
 ---
 
-## Local Development
+## Local Development & Testing
 
 ### Prerequisites
 - **Node.js**: >= 20.x (v24 LTS recommended)
 - **.NET SDK**: 8.0.x
 - **Rust**: 1.77+ with Cargo
-- **Git**
+- **Tauri Prerequisites**: See [Tauri v2 Prerequisites](https://v2.tauri.app/start/prerequisites/)
 
 ### Step-by-Step Setup
 ```bash
@@ -278,7 +311,7 @@ cd poolr
 
 # 1. Install frontend dependencies and run dev server
 cd frontend
-npm install
+npm ci
 npm run dev
 
 # 2. In a separate terminal, launch the .NET 8 statistics engine (port 5180)
