@@ -357,6 +357,10 @@ We warmly welcome contributions from the medical research, biostatistics, and op
 
 ---
 
+## PRISMA Example (Synthetic)
+
+Import `prisma-demo.ris` (20 synthetic records, placeholder IDs SYN-0001..SYN-0020) via File → Import. Expected counts (Poolr v0.6.5): identified 20, duplicates removed 4, screened 16, title/abstract excluded 7, full-text excluded 5, included 4. Reconcile: 16 − 7 = 9 assessed; 9 − 5 = 4 included.
+
 ## License
 
 This project is licensed under a **Proprietary License** — see the [LICENSE](LICENSE) file for details. All rights reserved.
